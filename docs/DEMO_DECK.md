@@ -221,3 +221,4 @@ Each TestHub Feature card stores:
 | 2026-11-05 | Home page navigation cards — Browse Features, Quick Add, Import Sheet, Ask the AI | Slide 2 |
 | 2026-11-05 | Landing page at root URL — hero, problem, feature grid, AI spotlight, CTA; unauthenticated-only | Slide 1b |
 | 2026-11-05 | Landing page dark mode — all sections now follow system/browser preference automatically | Slide 1b |
+| 2026-11-05 | Login page dark mode — background, card, inputs, labels, and illustrations all adapt to system theme | Slide 2 |
