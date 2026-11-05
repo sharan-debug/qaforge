@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 function IllustrationPaperPlane() {
   return (
-    <svg width="220" height="160" viewBox="0 0 220 160" fill="none" className="absolute top-0 left-0" aria-hidden="true">
+    <svg width="220" height="160" viewBox="0 0 220 160" fill="none" className="absolute top-0 left-0 opacity-100 dark:opacity-25" aria-hidden="true">
       {/* dashed trajectory */}
       <path d="M 30 130 Q 80 30 200 20" stroke="#A5B4FC" strokeWidth="1.8" strokeDasharray="6 5" fill="none" />
       {/* plane body */}
@@ -34,7 +34,7 @@ function IllustrationPaperPlane() {
 
 function IllustrationRobot() {
   return (
-    <svg width="260" height="220" viewBox="0 0 260 220" fill="none" className="absolute top-0 right-0" aria-hidden="true">
+    <svg width="260" height="220" viewBox="0 0 260 220" fill="none" className="absolute top-0 right-0 opacity-100 dark:opacity-25" aria-hidden="true">
       {/* background blobs */}
       <ellipse cx="200" cy="60" rx="90" ry="75" fill="#DBEAFE" opacity="0.6"/>
       <ellipse cx="240" cy="140" rx="40" ry="35" fill="#D1FAE5" opacity="0.55"/>
@@ -76,7 +76,7 @@ function IllustrationRobot() {
 
 function IllustrationCodeWindow() {
   return (
-    <svg width="200" height="180" viewBox="0 0 200 180" fill="none" className="absolute bottom-0 left-0" aria-hidden="true">
+    <svg width="200" height="180" viewBox="0 0 200 180" fill="none" className="absolute bottom-0 left-0 opacity-100 dark:opacity-25" aria-hidden="true">
       {/* background blob */}
       <ellipse cx="50" cy="150" rx="80" ry="55" fill="#E0E7FF" opacity="0.5"/>
       <circle cx="20" cy="100" r="40" fill="#DDD6FE" opacity="0.35"/>
@@ -116,7 +116,7 @@ function IllustrationCodeWindow() {
 
 function IllustrationBug() {
   return (
-    <svg width="220" height="180" viewBox="0 0 220 180" fill="none" className="absolute bottom-0 right-0" aria-hidden="true">
+    <svg width="220" height="180" viewBox="0 0 220 180" fill="none" className="absolute bottom-0 right-0 opacity-100 dark:opacity-25" aria-hidden="true">
       {/* background blob */}
       <ellipse cx="180" cy="150" rx="75" ry="55" fill="#D1FAE5" opacity="0.55"/>
       {/* dashed path */}
@@ -180,13 +180,10 @@ export default function Login() {
     }
   };
 
-  const inputCls = "w-full h-10 px-3.5 text-sm border border-indigo-100 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 transition placeholder:text-zinc-400";
+  const inputCls = "w-full h-10 px-3.5 text-sm border border-indigo-100 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition placeholder:text-zinc-400 dark:placeholder:text-zinc-500";
 
   return (
-    <div
-      className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center"
-      style={{ background: "linear-gradient(145deg, #ECEEF8 0%, #EEF2FF 50%, #F0FDF4 100%)" }}
-    >
+    <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center bg-gradient-to-br from-[#ECEEF8] via-[#EEF2FF] to-[#F0FDF4] dark:from-[#0D0F1F] dark:via-[#0F1120] dark:to-[#0A1A14]">
       {/* Corner illustrations */}
       <IllustrationPaperPlane />
       <IllustrationRobot />
@@ -200,16 +197,16 @@ export default function Login() {
           <div className="w-9 h-9 bg-indigo-600 text-white flex items-center justify-center rounded-xl shadow-md">
             <Beaker className="w-5 h-5" />
           </div>
-          <span className="font-heading font-black text-xl tracking-tight text-zinc-900">TestHub</span>
+          <span className="font-heading font-black text-xl tracking-tight text-zinc-900 dark:text-white">TestHub</span>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl shadow-indigo-100/50 border border-white/60 p-8">
+        <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm rounded-2xl shadow-xl shadow-indigo-100/50 dark:shadow-zinc-900/60 border border-white/60 dark:border-zinc-700/50 p-8">
           <div className="text-center mb-7">
             <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 mb-1.5">Internal · QA Knowledge</p>
-            <h1 className="text-2xl font-heading font-black tracking-tight text-zinc-900">
+            <h1 className="text-2xl font-heading font-black tracking-tight text-zinc-900 dark:text-white">
               {mode === "login" ? "Welcome back" : "Create account"}
             </h1>
-            <p className="text-sm text-zinc-500 mt-1">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
               {mode === "login"
                 ? "Sign in to access the QA knowledge base"
                 : "Get started with your QA workspace"}
@@ -219,7 +216,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "register" && (
               <div>
-                <label htmlFor="input-name" className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-1.5">Name</label>
+                <label htmlFor="input-name" className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 dark:text-zinc-400 block mb-1.5">Name</label>
                 <input
                   id="input-name"
                   data-testid="input-name"
@@ -233,7 +230,7 @@ export default function Login() {
               </div>
             )}
             <div>
-              <label htmlFor="input-email" className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-1.5">Email</label>
+              <label htmlFor="input-email" className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 dark:text-zinc-400 block mb-1.5">Email</label>
               <input
                 id="input-email"
                 data-testid="input-email"
@@ -247,7 +244,7 @@ export default function Login() {
               />
             </div>
             <div>
-              <label htmlFor="input-password" className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-1.5">Password</label>
+              <label htmlFor="input-password" className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 dark:text-zinc-400 block mb-1.5">Password</label>
               <input
                 id="input-password"
                 data-testid="input-password"
@@ -265,7 +262,7 @@ export default function Login() {
               data-testid="login-submit-button"
               type="submit"
               disabled={submitting}
-              className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-md shadow-indigo-200 mt-1"
+              className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-md shadow-indigo-200/60 dark:shadow-indigo-900/60 mt-1"
             >
               {submitting
                 ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -274,7 +271,7 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="text-xs text-zinc-500 mt-5 text-center">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-5 text-center">
             {mode === "login" ? "No account yet?" : "Already have an account?"}{" "}
             <button
               type="button"
@@ -287,7 +284,7 @@ export default function Login() {
           </p>
         </div>
 
-        <p className="text-center text-[10px] text-zinc-400 font-mono mt-5">v1.0 · Contribute as you test</p>
+        <p className="text-center text-[10px] text-zinc-400 dark:text-zinc-500 font-mono mt-5">v1.0 · Contribute as you test</p>
       </div>
     </div>
   );
