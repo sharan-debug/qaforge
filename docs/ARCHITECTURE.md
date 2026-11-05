@@ -1,4 +1,4 @@
-# TestHub V1 — Architecture
+# QAForge V1 — Architecture
 
 ## 1. Architecture principles
 
@@ -16,7 +16,7 @@ Browser (internal network / VPN)
        |
        v
 +-------------------------------+
-|          TestHub              |
+|          QAForge              |
 |                               |
 | React Frontend                |
 |       |                       |
@@ -44,7 +44,7 @@ AI Service
 Approved internal AI endpoint
 
 Future:
-TestHub -> QA Utility -> Redis / Unleash / Mock
+QAForge -> QA Utility -> Redis / Unleash / Mock
 ```
 
 ## 3. Frontend
@@ -271,7 +271,7 @@ POST /api/chat
 Authenticate
     |
     v
-Fetch relevant TestHub features from MongoDB
+Fetch relevant QAForge features from MongoDB
     |
     v
 Build bounded context (text block from feature fields)
@@ -395,7 +395,7 @@ Local development uses `docker-compose` with simpler configuration (no auth on M
 ## 16. Future integration boundary
 
 ```text
-TestHub
+QAForge
    |
    v
 QA Utility Adapter
@@ -407,4 +407,4 @@ QA Utility
    +-- Mocking
 ```
 
-TestHub must not embed Redis/Unleash execution logic in V1. Execution belongs to the future QA Utility integration.
+QAForge must not embed Redis/Unleash execution logic in V1. Execution belongs to the future QA Utility integration.

@@ -1,4 +1,4 @@
-# TestHub — UI Beautification Plan
+# QAForge — UI Beautification Plan
 
 ## Reference images analysed
 | File | App | Key signal |
@@ -7,7 +7,7 @@
 | `image copy.png` | Hilos | Warm internal hub: cream bg, bold personalised welcome, colourful stat chips |
 | `image copy 2.png` | Reddit Insights | Grouped sidebar sections, stat overview row, clean data tables |
 | `image copy 3.png` | Mora Analytics | Minimal AI-era light bg, strong type hierarchy |
-| `image copy 4.png` | Dovetail | Dark hero, "single source of truth" — mission-aligned with TestHub |
+| `image copy 4.png` | Dovetail | Dark hero, "single source of truth" — mission-aligned with QAForge |
 | `Pasted 22-10-2026` | Coinview | **Dark sidebar + clean white content, pastel metric cards, bold table rows** |
 
 ## Design direction

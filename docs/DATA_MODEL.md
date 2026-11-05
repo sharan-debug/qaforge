@@ -1,4 +1,4 @@
-# TestHub V1 — Data Model
+# QAForge V1 — Data Model
 
 ## Collections
 

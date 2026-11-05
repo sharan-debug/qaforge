@@ -1,4 +1,4 @@
-# Claude Development Prompts — TestHub V1
+# Claude Development Prompts — QAForge V1
 
 Use these prompts one at a time.
 
@@ -6,7 +6,7 @@ Use these prompts one at a time.
 
 Read `CLAUDE.md`, `docs/PRD.md`, `docs/ARCHITECTURE.md`, `docs/DATA_MODEL.md`, `docs/API_CONTRACT.md`, and `docs/IMPLEMENTATION_PLAN.md`.
 
-Then inspect the existing TestHub repository.
+Then inspect the existing QAForge repository.
 
 Do not modify files yet.
 
@@ -170,7 +170,7 @@ Return matched fields.
 
 ## Prompt 10 — Audit
 
-Implement TestHub knowledge history.
+Implement QAForge knowledge history.
 
 Record:
 - create

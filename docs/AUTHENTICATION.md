@@ -1,8 +1,8 @@
-# TestHub V1 — Authentication
+# QAForge V1 — Authentication
 
 ## Authentication strategy
 
-TestHub V1 uses application-managed email/password authentication.
+QAForge V1 uses application-managed email/password authentication.
 
 Google OAuth, Google Workspace, SSO, MFA and external identity providers are out of scope for V1.
 
@@ -34,7 +34,7 @@ Plaintext passwords must never be stored.
 
 ## Identity
 
-The authenticated email is the identity used by TestHub for:
+The authenticated email is the identity used by QAForge for:
 
 - feature ownership
 - editor history
@@ -63,7 +63,7 @@ Role assignment is admin-controlled. Backend enforces role checks. Frontend may 
 
 ## Network access
 
-TestHub is deployed within the organization's internal AWS/Kubernetes staging infrastructure. The application is not intended to be publicly accessible. Application-level authentication is still enforced independently of network controls.
+QAForge is deployed within the organization's internal AWS/Kubernetes staging infrastructure. The application is not intended to be publicly accessible. Application-level authentication is still enforced independently of network controls.
 
 ## Out of scope for V1
 

@@ -47,7 +47,7 @@ export default function AdminUsers() {
       <div className="mb-6">
         <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 mb-2">Admin</p>
         <h1 className="text-3xl md:text-4xl font-heading font-black tracking-tight text-zinc-900 dark:text-zinc-100">Users</h1>
-        <p className="text-sm text-zinc-400 mt-1.5">Manage roles for TestHub members.</p>
+        <p className="text-sm text-zinc-400 mt-1.5">Manage roles for QAForge members.</p>
       </div>
 
       <div className="bg-white dark:bg-zinc-900 border border-indigo-100 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">

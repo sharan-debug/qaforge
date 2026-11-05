@@ -1,4 +1,4 @@
-# TestHub V1 — Product Decisions
+# QAForge V1 — Product Decisions
 
 Accepted decisions that must not be reversed without an explicit product directive.
 
@@ -33,7 +33,7 @@ Passwords must be securely hashed. Plaintext passwords must never be stored.
 
 ## User identity
 
-The authenticated email is the TestHub user identity. It is used for ownership, editor history, audit records, and activity history.
+The authenticated email is the QAForge user identity. It is used for ownership, editor history, audit records, and activity history.
 
 ## Registration
 
@@ -68,7 +68,7 @@ Viewer / Editor / Approver / Admin. Initial role assignment is admin-controlled.
 | AI writes | V2/V3 |
 | QA Utility | V2/V3 |
 | Environment mutation | V2/V3 |
-| TestHub audit history | V1 |
+| QAForge audit history | V1 |
 | Environment execution history | QA Utility later |
 | Last Verified | V1 |
 | Core Feature | Mandatory dropdown |

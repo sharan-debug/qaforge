@@ -1,4 +1,4 @@
-# TestHub V1 — API Contract
+# QAForge V1 — API Contract
 
 Base path:
 `/api`
@@ -151,7 +151,7 @@ Response:
 
 ### GET /features/{id}/history
 
-Returns TestHub knowledge changes.
+Returns QAForge knowledge changes.
 
 Do not return secrets.
 
@@ -257,7 +257,7 @@ Suggested codes:
 
 ### POST /api/auth/register
 
-Creates a new TestHub user.
+Creates a new QAForge user.
 
 Request:
 
