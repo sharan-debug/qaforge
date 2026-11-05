@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Beaker, ArrowRight, Loader2 } from "lucide-react";
 import { api } from "../lib/api";
 import { toast } from "sonner";
@@ -153,6 +153,7 @@ function IllustrationBug() {
 
 export default function Login() {
   const { user, loading, setUser } = useAuth();
+  const navigate = useNavigate();
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -171,7 +172,7 @@ export default function Login() {
       const body = mode === "register" ? { email, password, name } : { email, password };
       const r = await api.post(endpoint, body);
       setUser(r.data);
-      window.location.href = "/";
+      navigate("/", { state: { justLoggedIn: true } });
     } catch (e) {
       toast.error(e?.response?.data?.detail || (mode === "register" ? "Registration failed" : "Invalid email or password"));
     } finally {

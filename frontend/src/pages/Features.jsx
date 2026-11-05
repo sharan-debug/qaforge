@@ -4,6 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { api } from "../lib/api";
 
+function featureRowBorder(f) {
+  if (f.pending_review) return "border-l-4 border-l-amber-400 dark:border-l-amber-500";
+  if (f.rejected || f.status === "archived") return "border-l-4 border-l-zinc-200 dark:border-l-zinc-700";
+  return "border-l-4 border-l-emerald-400 dark:border-l-emerald-500";
+}
+
 export default function Features() {
   const [features, setFeatures] = useState([]);
   const [q, setQ] = useState("");
@@ -74,16 +80,16 @@ export default function Features() {
     <div className="p-6 md:p-8 max-w-6xl">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 mb-2">Library</p>
-          <h1 className="text-3xl md:text-4xl font-heading font-black tracking-tight text-zinc-900 dark:text-zinc-100">Features</h1>
+          <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-indigo-400 mb-2">Library</p>
+          <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tight text-zinc-900 dark:text-zinc-100">Features</h1>
         </div>
         {canEdit && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 shrink-0">
             <button
               data-testid="import-btn"
               type="button"
               onClick={() => navigate("/import")}
-              className="inline-flex items-center gap-1.5 h-9 px-3 text-sm border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-zinc-900 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-zinc-600 dark:text-zinc-300 rounded-lg transition-colors"
+              className="inline-flex items-center gap-1.5 h-9 px-3 text-sm border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-zinc-900 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-zinc-600 dark:text-zinc-300 rounded-lg transition-colors whitespace-nowrap"
             >
               <Upload className="w-4 h-4" /> Import
             </button>
@@ -91,7 +97,7 @@ export default function Features() {
               data-testid="features-new-btn"
               type="button"
               onClick={() => navigate("/features/quick-add")}
-              className="inline-flex items-center gap-1.5 h-9 px-3 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-sm shadow-indigo-200"
+              className="inline-flex items-center gap-1.5 h-9 px-3 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-sm shadow-indigo-200 whitespace-nowrap"
             >
               <Zap className="w-4 h-4" /> Quick Add
             </button>
@@ -215,7 +221,7 @@ export default function Features() {
             <Link
               key={f.id}
               to={`/features/${f.id}`}
-              className="grid grid-cols-12 px-4 py-3 items-center hover:bg-indigo-50/30 dark:hover:bg-zinc-800/30 transition-colors"
+              className={`grid grid-cols-12 px-4 py-4 items-center hover:bg-indigo-50/30 dark:hover:bg-zinc-800/30 transition-colors ${featureRowBorder(f)}`}
               data-testid={`feature-row-${f.id}`}
             >
               <div className="col-span-4 min-w-0">
