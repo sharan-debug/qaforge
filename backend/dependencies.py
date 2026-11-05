@@ -55,7 +55,7 @@ async def _create_session(user_id: str, response: Response) -> str:
     await db.user_sessions.insert_one({
         "user_id": user_id,
         "session_token": session_token,
-        "expires_at": expires_at.isoformat(),
+        "expires_at": expires_at,  # stored as BSON Date so MongoDB TTL index can fire on it
         "created_at": now_iso(),
     })
     response.set_cookie(
