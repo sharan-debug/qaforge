@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import Login from "./pages/Login";
+import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import Features from "./pages/Features";
 import FeatureDetail from "./pages/FeatureDetails";
@@ -29,18 +30,29 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+// Root gate: authenticated → dashboard, unauthenticated → landing page
+function RootGate() {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-sm text-zinc-400">Loading…</div>
+      </div>
+    );
+  }
+  if (!user) return <LandingPage />;
+  return (
+    <ProtectedRoute>
+      <Layout />
+    </ProtectedRoute>
+  );
+}
+
 function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }
-      >
+      <Route path="/" element={<RootGate />}>
         <Route index element={<Dashboard />} />
         <Route path="features" element={<Features />} />
         <Route path="features/quick-add" element={<QuickAdd />} />
