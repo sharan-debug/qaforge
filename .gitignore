@@ -28,3 +28,7 @@ frontend/build/
 *.log
 /tmp/
 
+# Local scratch notes — never pushed
+notes/
+assets/
+
