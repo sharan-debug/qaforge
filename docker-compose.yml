@@ -9,6 +9,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: "0.5"
+        reservations:
+          memory: 512m
+          cpus: "0.2"
 
   backend:
     build: ./backend
@@ -25,6 +33,14 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "0.5"
+        reservations:
+          memory: 256m
+          cpus: "0.2"
 
   frontend:
     build:
@@ -36,6 +52,14 @@ services:
       - "3000:80"
     depends_on:
       - backend
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+          cpus: "0.2"
+        reservations:
+          memory: 64m
+          cpus: "0.05"
 
 volumes:
   mongo_data:

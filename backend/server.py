@@ -2,9 +2,12 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 import database  # loads .env and creates the DB connection before any router imports
 from database import CORS_ORIGINS, shutdown_db, ensure_indexes
+from limiter import limiter
 from routers import auth, core_features, features, activity, ai, users, qa
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -14,12 +17,15 @@ _MAX_BODY_BYTES = 10 * 1024 * 1024  # 10 MB
 
 app = FastAPI(title="Test Knowledge Hub")
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=CORS_ORIGINS,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
 
 
