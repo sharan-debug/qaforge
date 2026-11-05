@@ -922,16 +922,16 @@ export default function Layout() {
 	const navCls = ({ isActive }) =>
 		`group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-200 ease-in-out border-l-2 ${
 			isActive
-				? "bg-slate-100/80 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500 font-medium"
-				: "text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-100 border-transparent"
+				? "bg-zinc-800 text-indigo-400 border-indigo-500 font-medium"
+				: "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 border-transparent"
 		}`;
 
 	return (
 		<div className="min-h-screen flex bg-slate-50 dark:bg-zinc-950 transition-colors duration-200 ease-in-out">
 			{/* Sidebar */}
-			<aside className="w-60 shrink-0 bg-white dark:bg-zinc-900 border-r border-slate-200 dark:border-zinc-800 flex flex-col sticky top-0 h-screen overflow-y-auto z-10 transition-colors duration-200 ease-in-out">
+			<aside className="w-60 shrink-0 bg-zinc-900 dark:bg-zinc-950 border-r border-zinc-800 flex flex-col sticky top-0 h-screen overflow-y-auto z-10">
 				{/* Brand */}
-				<div className="p-5 border-b border-slate-200 dark:border-zinc-800">
+				<div className="p-5 border-b border-zinc-800">
 					<Link
 						to="/"
 						className="flex items-center gap-2"
@@ -940,7 +940,7 @@ export default function Layout() {
 						<div className="w-8 h-8 bg-indigo-600 text-white flex items-center justify-center rounded-xl shadow-sm shadow-indigo-200">
 							<Beaker className="w-4 h-4" />
 						</div>
-						<span className="font-heading font-black text-base tracking-tight text-slate-900 dark:text-zinc-50">
+						<span className="font-heading font-black text-base tracking-tight text-zinc-50">
 							TestHub
 						</span>
 					</Link>
@@ -961,8 +961,8 @@ export default function Layout() {
 									<item.icon
 										className={`w-4 h-4 transition-colors duration-200 ${
 											isActive
-												? "text-blue-500 dark:text-blue-400"
-												: "text-slate-400 dark:text-zinc-500 group-hover:text-slate-600 dark:group-hover:text-zinc-300"
+												? "text-indigo-400"
+												: "text-zinc-500 group-hover:text-zinc-300"
 										}`}
 									/>
 									<span className="flex-1">{item.label}</span>
@@ -982,11 +982,11 @@ export default function Layout() {
 						onClick={() => setChatOpen((o) => !o)}
 						className={`group w-full flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-200 ease-in-out border-l-2 ${
 							chatOpen
-								? "bg-red-50/80 dark:bg-red-950/40 text-red-600 dark:text-red-400 border-red-500 dark:border-red-400 font-medium"
-								: "text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-100 border-transparent"
+								? "bg-red-950/40 text-red-400 border-red-400 font-medium"
+								: "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 border-transparent"
 						}`}
 					>
-						<Sparkles className={`w-4 h-4 transition-colors duration-200 ${chatOpen ? "text-red-500 dark:text-red-400" : "text-slate-400 dark:text-zinc-500 group-hover:text-slate-600 dark:group-hover:text-zinc-300"}`} />
+						<Sparkles className={`w-4 h-4 transition-colors duration-200 ${chatOpen ? "text-red-400" : "text-zinc-500 group-hover:text-zinc-300"}`} />
 						Ask the Agent
 					</button>
 
@@ -997,8 +997,8 @@ export default function Layout() {
 									<FlaskConical
 										className={`w-4 h-4 transition-colors duration-200 ${
 											isActive
-												? "text-blue-500 dark:text-blue-400"
-												: "text-slate-400 dark:text-zinc-500 group-hover:text-slate-600 dark:group-hover:text-zinc-300"
+												? "text-indigo-400"
+												: "text-zinc-500 group-hover:text-zinc-300"
 										}`}
 									/>
 									QA Actions
@@ -1010,7 +1010,7 @@ export default function Layout() {
 					{user?.role === "admin" && (
 						<>
 							<div className="px-3 pt-4 pb-1">
-								<span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-zinc-600">
+								<span className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
 									Admin
 								</span>
 							</div>
@@ -1024,8 +1024,8 @@ export default function Layout() {
 										<Settings
 											className={`w-4 h-4 transition-colors duration-200 ${
 												isActive
-													? "text-blue-500 dark:text-blue-400"
-													: "text-slate-400 dark:text-zinc-500 group-hover:text-slate-600 dark:group-hover:text-zinc-300"
+													? "text-indigo-400"
+													: "text-zinc-500 group-hover:text-zinc-300"
 											}`}
 										/>
 										Core Features
@@ -1042,8 +1042,8 @@ export default function Layout() {
 										<UserCog
 											className={`w-4 h-4 transition-colors duration-200 ${
 												isActive
-													? "text-blue-500 dark:text-blue-400"
-													: "text-slate-400 dark:text-zinc-500 group-hover:text-slate-600 dark:group-hover:text-zinc-300"
+													? "text-indigo-400"
+													: "text-zinc-500 group-hover:text-zinc-300"
 											}`}
 										/>
 										Users
@@ -1056,7 +1056,7 @@ export default function Layout() {
 
 				{/* Quick Add */}
 				{user?.role !== "viewer" && (
-					<div className="p-3 border-t border-slate-200 dark:border-zinc-800">
+					<div className="p-3 border-t border-zinc-800">
 						<button
 							data-testid="new-feature-button"
 							type="button"
@@ -1070,26 +1070,26 @@ export default function Layout() {
 
 				{/* Profile card */}
 				{user && (
-					<div className="p-3 border-t border-slate-200 dark:border-zinc-800 flex items-center gap-2.5 transition-colors duration-200">
+					<div className="p-3 border-t border-zinc-800 flex items-center gap-2.5">
 						{/* Avatar */}
-						<div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-950/60 rounded-full flex items-center justify-center text-sm font-semibold text-indigo-700 dark:text-indigo-400 shrink-0">
+						<div className="w-8 h-8 bg-indigo-950/60 rounded-full flex items-center justify-center text-sm font-semibold text-indigo-400 shrink-0">
 							{user.name?.[0]?.toUpperCase() || "?"}
 						</div>
 
 						{/* Name / email / role */}
 						<div className="flex-1 min-w-0">
 							<div
-								className="text-sm font-semibold truncate text-slate-900 dark:text-zinc-100 leading-tight"
+								className="text-sm font-semibold truncate text-zinc-100 leading-tight"
 								data-testid="current-user-name"
 							>
 								{user.name}
 							</div>
-							<div className="text-[11px] text-slate-400 dark:text-zinc-500 truncate leading-tight mt-0.5">
+							<div className="text-[11px] text-zinc-500 truncate leading-tight mt-0.5">
 								{user.email}
 							</div>
 							{user.role && (
 								<span
-									className="inline-block text-[10px] font-mono px-1.5 py-0.5 mt-1 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 border border-slate-200 dark:border-zinc-700"
+									className="inline-block text-[10px] font-mono px-1.5 py-0.5 mt-1 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700"
 									data-testid="user-role-badge"
 								>
 									{user.role}
@@ -1104,7 +1104,7 @@ export default function Layout() {
 								type="button"
 								data-testid="logout-button"
 								onClick={logout}
-								className="w-9 h-9 flex items-center justify-center text-slate-400 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all duration-200"
+								className="w-9 h-9 flex items-center justify-center text-zinc-500 hover:text-zinc-200 rounded-lg hover:bg-zinc-800 transition-all duration-200"
 								title="Logout"
 							>
 								<LogOut className="w-4 h-4" />
