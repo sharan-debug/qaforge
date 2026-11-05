@@ -18,6 +18,19 @@
 
 ---
 
+## Slide 1b — Landing Page (first impression)
+
+**What the audience sees before they even log in**
+
+- Visiting the TestHub URL shows a branded landing page — no login wall as first impression.
+- Sections: hero headline → the problem → full feature grid → AI assistant spotlight → sign-in CTA.
+- Authenticated users are taken straight to the dashboard; the landing page is only for new visitors.
+- Same visual language as the app: indigo gradient, Chivo headings, IBM Plex Sans body.
+
+> **Show on screen:** Open the TestHub URL while logged out. Scroll through the landing page — hero, problem cards, feature grid, mock AI chat, and the CTA. Then click "Sign in to TestHub".
+
+---
+
 ## Slide 2 — The Solution: TestHub
 
 **One place for all QA knowledge**
@@ -205,3 +218,4 @@ Each TestHub Feature card stores:
 | 2026-11-05 | Docker Compose resource limits added for all three containers | Slide 9 |
 | 2026-11-05 | Post-login splash screen — branded welcome with user name, role badge, tip, and animated progress bar | Slide 2 |
 | 2026-11-05 | Home page navigation cards — Browse Features, Quick Add, Import Sheet, Ask the AI | Slide 2 |
+| 2026-11-05 | Landing page at root URL — hero, problem, feature grid, AI spotlight, CTA; unauthenticated-only | Slide 1b |
