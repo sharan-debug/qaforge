@@ -26,8 +26,9 @@
 - Sections: hero headline → the problem → full feature grid → AI assistant spotlight → sign-in CTA.
 - Authenticated users are taken straight to the dashboard; the landing page is only for new visitors.
 - Same visual language as the app: indigo gradient, Chivo headings, IBM Plex Sans body.
+- **Automatic dark mode** — the landing page follows the viewer's system/browser preference instantly. No extra setting needed; the same light/dark toggle that works inside the app also applies to the landing page.
 
-> **Show on screen:** Open the TestHub URL while logged out. Scroll through the landing page — hero, problem cards, feature grid, mock AI chat, and the CTA. Then click "Sign in to TestHub".
+> **Show on screen:** Open the TestHub URL while logged out. Scroll through the landing page — hero, problem cards, feature grid, mock AI chat, and the CTA. Toggle your OS dark mode on/off to show the page switching themes automatically. Then click "Sign in to TestHub".
 
 ---
 
@@ -219,3 +220,4 @@ Each TestHub Feature card stores:
 | 2026-11-05 | Post-login splash screen — branded welcome with user name, role badge, tip, and animated progress bar | Slide 2 |
 | 2026-11-05 | Home page navigation cards — Browse Features, Quick Add, Import Sheet, Ask the AI | Slide 2 |
 | 2026-11-05 | Landing page at root URL — hero, problem, feature grid, AI spotlight, CTA; unauthenticated-only | Slide 1b |
+| 2026-11-05 | Landing page dark mode — all sections now follow system/browser preference automatically | Slide 1b |
