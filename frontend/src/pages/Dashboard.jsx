@@ -1,13 +1,23 @@
-import { useEffect, useState } from "react";
+// biome-ignore assist/source/organizeImports: <explanation>
+import { useCallback, useEffect, useState } from "react";
 import { api } from "../lib/api";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
-import { Library, Users, Tag, Plus, Upload, Sparkles, Activity } from "lucide-react";
+import { Link, useLocation, useNavigate, useOutletContext } from "react-router-dom";
+import { Library, Users, Tag, Plus, Upload, Sparkles, Activity, Zap } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import PostLoginSplash from "../components/PostLoginSplash";
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [features, setFeatures] = useState([]);
   const { openChat } = useOutletContext();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const firstName = user?.name?.split(" ")[0] || user?.name || "there";
+
+  // Show splash only once per login — consume the state so back-nav doesn't re-show it
+  const [showSplash, setShowSplash] = useState(() => !!location.state?.justLoggedIn);
+  const hideSplash = useCallback(() => setShowSplash(false), []);
 
   useEffect(() => {
     (async () => {
@@ -20,49 +30,120 @@ export default function Dashboard() {
   }, []);
 
   const statCards = [
-    { label: "Features", value: stats?.total_features ?? "—", icon: Library, bg: "bg-indigo-50", text: "text-indigo-600" },
-    { label: "Contributors", value: stats?.total_contributors ?? "—", icon: Users, bg: "bg-emerald-50", text: "text-emerald-600" },
-    { label: "Tags", value: stats?.total_tags ?? "—", icon: Tag, bg: "bg-amber-50", text: "text-amber-600" },
+    {
+      label: "Features", value: stats?.total_features ?? "—", icon: Library,
+      cardBg: "bg-indigo-50 dark:bg-indigo-950/40", cardBorder: "border-indigo-200 dark:border-indigo-800",
+      iconBg: "bg-indigo-100 dark:bg-indigo-900/60", iconText: "text-indigo-600 dark:text-indigo-400",
+      numText: "text-indigo-700 dark:text-indigo-300",
+    },
+    {
+      label: "Contributors", value: stats?.total_contributors ?? "—", icon: Users,
+      cardBg: "bg-emerald-50 dark:bg-emerald-950/40", cardBorder: "border-emerald-200 dark:border-emerald-800",
+      iconBg: "bg-emerald-100 dark:bg-emerald-900/60", iconText: "text-emerald-600 dark:text-emerald-400",
+      numText: "text-emerald-700 dark:text-emerald-300",
+    },
+    {
+      label: "Tags", value: stats?.total_tags ?? "—", icon: Tag,
+      cardBg: "bg-amber-50 dark:bg-amber-950/40", cardBorder: "border-amber-200 dark:border-amber-800",
+      iconBg: "bg-amber-100 dark:bg-amber-900/60", iconText: "text-amber-600 dark:text-amber-400",
+      numText: "text-amber-700 dark:text-amber-300",
+    },
+  ];
+
+  // Navigation shortcut cards shown at the top of the home page
+  const navCards = [
+    {
+      title: "Browse Features",
+      desc: "Search and explore all QA feature knowledge.",
+      icon: Library,
+      to: "/features",
+      bg: "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800",
+      iconBg: "bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400",
+    },
+    {
+      title: "Quick Add",
+      desc: "Capture new feature knowledge in under 30 s.",
+      icon: Zap,
+      to: "/features/quick-add",
+      bg: "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800",
+      iconBg: "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400",
+    },
+    {
+      title: "Import Sheet",
+      desc: "Bulk import from your Excel or CSV file.",
+      icon: Upload,
+      to: "/import",
+      bg: "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800",
+      iconBg: "bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400",
+    },
+    {
+      title: "Ask the AI",
+      desc: "Get instant answers from your knowledge base.",
+      icon: Sparkles,
+      action: openChat,
+      bg: "bg-violet-50 dark:bg-violet-950/40 border-violet-200 dark:border-violet-800",
+      iconBg: "bg-violet-100 dark:bg-violet-900/60 text-violet-600 dark:text-violet-400",
+    },
   ];
 
   return (
-    <div className="p-6 md:p-8 max-w-6xl">
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 mb-2">Overview</p>
-          <h1 className="text-3xl md:text-4xl font-heading font-black tracking-tight text-zinc-900 dark:text-zinc-100">Team Test Knowledge</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">Your team's central QA hub — test data, mocks, APIs, Redis, Mongo and experiments.</p>
+    <>
+      {showSplash && user && <PostLoginSplash user={user} onDone={hideSplash} />}
+      <div className="p-6 md:p-8 max-w-6xl">
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-indigo-400 mb-2">Overview</p>
+            <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tight text-zinc-900 dark:text-zinc-100">Welcome back, {firstName}</h1>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">Your team&apos;s central QA hub — test data, mocks, APIs, Redis, Mongo and experiments.</p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              type="button"
+              data-testid="dashboard-ask-agent"
+              onClick={openChat}
+              className="inline-flex items-center gap-1.5 h-9 px-3 text-sm border border-indigo-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-lg transition-colors whitespace-nowrap"
+            >
+              <Sparkles className="w-4 h-4 text-indigo-500 dark:text-indigo-400" /> Ask the Agent
+            </button>
+            <button
+              type="button"
+              data-testid="dashboard-new-feature"
+              onClick={() => navigate("/features/new")}
+              className="inline-flex items-center gap-1.5 h-9 px-3 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-sm shadow-indigo-200 whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" /> New Feature
+            </button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            data-testid="dashboard-ask-agent"
-            onClick={openChat}
-            className="inline-flex items-center gap-1.5 h-9 px-3 text-sm border border-indigo-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-indigo-50 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-lg transition-colors"
-          >
-            <Sparkles className="w-4 h-4 text-indigo-500 dark:text-indigo-400" /> Ask the Agent
-          </button>
-          <button
-            type="button"
-            data-testid="dashboard-new-feature"
-            onClick={() => navigate("/features/new")}
-            className="inline-flex items-center gap-1.5 h-9 px-3 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-sm shadow-indigo-200"
-          >
-            <Plus className="w-4 h-4" /> New Feature
-          </button>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+        {/* Navigation shortcut cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          {navCards.map((card) => {
+            const Icon = card.icon;
+            const cardBody = <>
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${card.iconBg}`}>
+                <Icon className="w-4 h-4" />
+              </div>
+              <p className="font-semibold text-sm text-zinc-800 dark:text-zinc-100 leading-tight">{card.title}</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-snug">{card.desc}</p>
+            </>;
+            const cls = `flex flex-col gap-2 p-4 rounded-xl border ${card.bg} hover:shadow-md transition-shadow h-full`;
+            return card.to
+              ? <Link key={card.title} to={card.to} className={cls}>{cardBody}</Link>
+              : <button key={card.title} type="button" onClick={card.action} className={`text-left ${cls}`}>{cardBody}</button>;
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         {statCards.map((s) => (
-          <div key={s.label} className="bg-white dark:bg-zinc-800/50 border border-indigo-100 dark:border-zinc-700 rounded-xl shadow-sm p-5" data-testid={`stat-${s.label.toLowerCase()}`}>
+          <div key={s.label} className={`${s.cardBg} border ${s.cardBorder} rounded-xl shadow-sm p-5`} data-testid={`stat-${s.label.toLowerCase()}`}>
             <div className="flex items-start justify-between mb-4">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-400">{s.label}</p>
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${s.bg} ${s.text}`}>
+              <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-indigo-400">{s.label}</p>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${s.iconBg} ${s.iconText}`}>
                 <s.icon className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-4xl font-heading font-black tracking-tight text-zinc-900 dark:text-zinc-100">{s.value}</p>
+            <p className={`text-4xl font-heading font-black tracking-tight ${s.numText}`}>{s.value}</p>
           </div>
         ))}
       </div>
@@ -135,5 +216,6 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+    </>
   );
 }

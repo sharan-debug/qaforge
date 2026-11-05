@@ -260,7 +260,30 @@ Use the following responsibilities:
 - `IMPLEMENTATION_PLAN.md` — implementation sequence
 - `V1_SCOPE_MATRIX.md` — authoritative V1/V2 scope boundary
 - `CURRENT_STATE.md` — Phase 0 baseline analysis and gap list
+- `DEMO_DECK.md` — living demo/presentation document for org-wide showcase
 - `CLAUDE.md` — instructions for working on the repository
 
 Do not duplicate large sections between these documents.
 Prefer referencing the authoritative document.
+
+## Demo presentation rule
+
+TestHub is being prepared for an organisation-wide demo. A PPT will be built from `docs/DEMO_DECK.md`.
+
+**After every meaningful change to the application, update `docs/DEMO_DECK.md`.**
+
+A meaningful change is any of:
+- A new user-facing feature or screen
+- A security hardening item
+- An infrastructure or deployment improvement
+- A new AI capability
+- A performance improvement visible to users
+
+### How to update DEMO_DECK.md
+
+- Find the relevant slide section and update it in place.
+- If no slide covers the change, add a new slide section at the appropriate position.
+- Keep each slide section short: a title, 3–5 bullet points, and a "Show on screen" note describing what to click through during the live demo.
+- Write for a non-technical QA/engineering manager audience — avoid jargon.
+- Do not duplicate the full technical detail from other docs; link to them if needed.
+- Also add the update reference to the "Change log" section at the bottom of DEMO_DECK.md so the presenter knows what is new since the last version.
