@@ -57,7 +57,7 @@ export default function PostLoginSplash({ user, onDone }) {
         <div className="w-12 h-12 bg-indigo-600 text-white flex items-center justify-center rounded-2xl shadow-lg shadow-indigo-200">
           <Beaker className="w-6 h-6" />
         </div>
-        <span className="font-black text-2xl tracking-tight text-zinc-900">TestHub</span>
+        <span className="font-black text-2xl tracking-tight text-zinc-900">QAForge</span>
       </div>
 
       {/* Welcome card */}

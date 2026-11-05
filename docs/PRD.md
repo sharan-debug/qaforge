@@ -1,8 +1,8 @@
-# TestHub V1 — Product Requirements Document
+# QAForge V1 — Product Requirements Document
 
 ## 1. Product
 
-**TestHub — Centralized QA Knowledge Hub**
+**QAForge — Centralized QA Knowledge Hub**
 
 ## 2. Problem
 
@@ -24,7 +24,7 @@ The V1 product does not attempt to automate the environment.
 
 ## 4. Product positioning
 
-TestHub is NOT:
+QAForge is NOT:
 - a replacement for Jira
 - a replacement for Redis UI
 - a replacement for Unleash
@@ -32,7 +32,7 @@ TestHub is NOT:
 - a test-case management system
 - a mandatory documentation workflow
 
-TestHub IS:
+QAForge IS:
 - a centralized QA knowledge hub
 - a searchable source of test information
 - an easier alternative to asking people/searching scattered documents
@@ -257,7 +257,7 @@ Primary use cases:
 - "What mock/API is relevant?"
 - "Summarize the testing information for this feature."
 
-AI should retrieve relevant TestHub records before answering.
+AI should retrieve relevant QAForge records before answering.
 
 AI should distinguish between:
 - known stored information
@@ -293,7 +293,7 @@ Record:
 - changed fields
 - before/after values where safe
 
-This is TestHub knowledge history only.
+This is QAForge knowledge history only.
 
 Environment execution history belongs to the future QA Utility integration.
 
@@ -358,7 +358,7 @@ Secondary:
 
 ### Authentication
 
-TestHub is an internal application.
+QAForge is an internal application.
 
 V1 uses username/password authentication.
 
@@ -370,10 +370,10 @@ for V1.
 
 Authenticated users can:
 
-- view TestHub content according to their role
+- view QAForge content according to their role
 - create features if permitted
 - edit permitted feature data
-- view their TestHub activity/history
+- view their QAForge activity/history
 
 Authentication and authorization implementation details are
 defined separately in `AUTHENTICATION.md` and `ARCHITECTURE.md`.

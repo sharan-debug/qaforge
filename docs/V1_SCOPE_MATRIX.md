@@ -1,4 +1,4 @@
-# TestHub — V1 Scope Matrix
+# QAForge — V1 Scope Matrix
 
 Authoritative reference for what must be built now versus what belongs to later phases.
 
@@ -67,7 +67,7 @@ Authoritative reference for what must be built now versus what belongs to later 
 | Edit | ✓ | | |
 | Soft delete | ✓ | | |
 | Last Verified / Mark as Verified | ✓ | | |
-| Feature history (TestHub edits) | ✓ | | |
+| Feature history (QAForge edits) | ✓ | | |
 | Environment execution history | ✗ | ✓ | QA Utility |
 
 ## Quick Add
@@ -100,9 +100,9 @@ Authoritative reference for what must be built now versus what belongs to later 
 | Item | V1 | V2+ | Notes |
 |---|---|---|---|
 | Read-only AI chat | ✓ | | |
-| Retrieval from TestHub knowledge | ✓ | | Current full-context approach |
+| Retrieval from QAForge knowledge | ✓ | | Current full-context approach |
 | Source references in answers | ✓ | | |
-| AI writes to TestHub | ✗ | ✓ | |
+| AI writes to QAForge | ✗ | ✓ | |
 | AI executes APIs | ✗ | — | Never |
 | AI modifies Redis | ✗ | — | Never |
 | AI modifies experiments | ✗ | — | Never |

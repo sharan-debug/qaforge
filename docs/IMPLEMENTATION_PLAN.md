@@ -1,4 +1,4 @@
-# TestHub V1 — Implementation Plan for Claude
+# QAForge V1 — Implementation Plan for Claude
 
 ## Working rule
 
@@ -228,7 +228,7 @@ Add indexes based on actual query patterns.
 
 ---
 
-# Phase 11 — TestHub history
+# Phase 11 — QAForge history
 
 Implement audit logging for:
 - create
@@ -240,7 +240,7 @@ Implement audit logging for:
 
 Build Feature History UI.
 
-History is TestHub knowledge history only.
+History is QAForge knowledge history only.
 
 ---
 
@@ -258,7 +258,7 @@ Add:
 
 Implement:
 - `/ai/chat`
-- retrieval from TestHub
+- retrieval from QAForge
 - bounded context
 - read-only model call
 - source references

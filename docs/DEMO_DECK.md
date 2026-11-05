@@ -1,4 +1,4 @@
-# TestHub — Organisation Demo Deck
+# QAForge — Organisation Demo Deck
 > Source document for the PPT presentation. Each section = one slide (or one slide group).
 > Updated automatically as features are built. See **Change log** at the bottom for what is new.
 
@@ -22,21 +22,21 @@
 
 **What the audience sees before they even log in**
 
-- Visiting the TestHub URL shows a branded landing page — no login wall as first impression.
+- Visiting the QAForge URL shows a branded landing page — no login wall as first impression.
 - Sections: hero headline → the problem → full feature grid → AI assistant spotlight → sign-in CTA.
 - Authenticated users are taken straight to the dashboard; the landing page is only for new visitors.
 - Same visual language as the app: indigo gradient, Chivo headings, IBM Plex Sans body.
 - **Automatic dark mode** — the landing page follows the viewer's system/browser preference instantly. No extra setting needed; the same light/dark toggle that works inside the app also applies to the landing page.
 
-> **Show on screen:** Open the TestHub URL while logged out. Scroll through the landing page — hero, problem cards, feature grid, mock AI chat, and the CTA. Toggle your OS dark mode on/off to show the page switching themes automatically. Then click "Sign in to TestHub".
+> **Show on screen:** Open the QAForge URL while logged out. Scroll through the landing page — hero, problem cards, feature grid, mock AI chat, and the CTA. Toggle your OS dark mode on/off to show the page switching themes automatically. Then click "Sign in to QAForge".
 
 ---
 
-## Slide 2 — The Solution: TestHub
+## Slide 2 — The Solution: QAForge
 
 **One place for all QA knowledge**
 
-- TestHub is an internal knowledge hub purpose-built for QA teams.
+- QAForge is an internal knowledge hub purpose-built for QA teams.
 - Any engineer can store and find: test data, mock steps, automation APIs, Redis keys, MongoDB collections, and experiment/feature flags — all linked to a named feature.
 - Built on the team's existing stack: React + Python + MongoDB, containerised with Docker, deployed internally on AWS / Kubernetes.
 - Access through the company network or VPN — no public exposure.
@@ -49,7 +49,7 @@
 
 **Structured, searchable knowledge per feature**
 
-Each TestHub Feature card stores:
+Each QAForge Feature card stores:
 
 - Feature name + Core Feature grouping
 - Description and owner
@@ -95,10 +95,10 @@ Each TestHub Feature card stores:
 
 **Ask questions in plain English — get answers with sources**
 
-- Built-in AI assistant knows the entire TestHub knowledge base.
+- Built-in AI assistant knows the entire QAForge knowledge base.
 - Ask: "What Redis keys does the cancellation flow use?" or "How do I mock the eligibility API?"
 - AI responds with the exact stored data and cites which feature it came from.
-- AI is read-only — it cannot modify TestHub, Redis, or any system.
+- AI is read-only — it cannot modify QAForge, Redis, or any system.
 - All AI calls go through the Python backend; the model API key never reaches the browser.
 
 > **Show on screen:** Open the AI chat panel. Type a question about a known feature. Show the response with the source citation.
@@ -201,7 +201,7 @@ Each TestHub Feature card stores:
 - Secure, role-controlled, fully audited.
 - Runs on your existing internal infrastructure today.
 
-**Next step:** Pilot with one QA squad — migrate one feature domain from Excel into TestHub and measure time-to-find over two sprints.
+**Next step:** Pilot with one QA squad — migrate one feature domain from Excel into QAForge and measure time-to-find over two sprints.
 
 ---
 
@@ -222,3 +222,4 @@ Each TestHub Feature card stores:
 | 2026-11-05 | Landing page at root URL — hero, problem, feature grid, AI spotlight, CTA; unauthenticated-only | Slide 1b |
 | 2026-11-05 | Landing page dark mode — all sections now follow system/browser preference automatically | Slide 1b |
 | 2026-11-05 | Login page dark mode — background, card, inputs, labels, and illustrations all adapt to system theme | Slide 2 |
+| 2026-11-05 | Application renamed from TestHub to QAForge across all UI and documentation | All slides |

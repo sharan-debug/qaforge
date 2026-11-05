@@ -1,8 +1,8 @@
-# CLAUDE.md — TestHub
+# CLAUDE.md — QAForge
 
 ## Mission
 
-Build TestHub V1 as a low-friction, production-ready internal QA knowledge hub.
+Build QAForge V1 as a low-friction, production-ready internal QA knowledge hub.
 
 The product exists to solve one core problem:
 
@@ -44,10 +44,10 @@ A user must be able to create useful knowledge in roughly the same effort as mai
 - Approver
 - Admin
 
-Initial role assignment is controlled by TestHub Admin.
+Initial role assignment is controlled by QAForge Admin.
 
 ### Feature knowledge
-A TestHub Feature contains:
+A QAForge Feature contains:
 - Core Feature
 - Feature name
 - Optional Jira ticket
@@ -136,22 +136,22 @@ A separate Test Case import option is planned, but the input format is intention
 Provide a low-friction Quick Add flow where a user can select a Core Feature, enter a Feature Name, paste notes/data, and save without filling every section.
 
 ### History
-TestHub history means history of changes to knowledge stored in TestHub.
+QAForge history means history of changes to knowledge stored in QAForge.
 It does NOT mean environment execution history.
 
-Every create/update/delete that changes TestHub knowledge should create an audit event.
+Every create/update/delete that changes QAForge knowledge should create an audit event.
 
 ### AI
 AI is read-only in V1.
 It can:
-- search/retrieve TestHub data
+- search/retrieve QAForge data
 - answer questions
 - summarize feature knowledge
 - explain stored Redis/experiment/mock/API information
-- cite/show the TestHub source context used
+- cite/show the QAForge source context used
 
 AI cannot:
-- edit TestHub
+- edit QAForge
 - modify MongoDB directly
 - modify Redis
 - modify Unleash
@@ -199,7 +199,7 @@ V3 may provide:
 11. Use UTC timestamps in storage.
 12. Return clear API errors with stable error codes.
 13. Add tests for new backend behavior.
-14. Keep UI changes consistent with the existing TestHub design.
+14. Keep UI changes consistent with the existing QAForge design.
 15. Do not add V2 complexity to V1 unless it directly reduces V1 user effort.
 16. After each phase: run all tests, build the frontend, verify the backend starts, commit and push to git.
 
@@ -240,7 +240,7 @@ Before modifying authentication, read:
 
 Do NOT implement Google OAuth or Google Workspace authentication.
 
-TestHub V1 uses application-managed email/password
+QAForge V1 uses application-managed email/password
 authentication backed by MongoDB.
 
 Do not change this architecture unless explicitly instructed
@@ -268,7 +268,7 @@ Prefer referencing the authoritative document.
 
 ## Demo presentation rule
 
-TestHub is being prepared for an organisation-wide demo. A PPT will be built from `docs/DEMO_DECK.md`.
+QAForge is being prepared for an organisation-wide demo. A PPT will be built from `docs/DEMO_DECK.md`.
 
 **After every meaningful change to the application, update `docs/DEMO_DECK.md`.**
 

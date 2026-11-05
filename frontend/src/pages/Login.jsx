@@ -197,7 +197,7 @@ export default function Login() {
           <div className="w-9 h-9 bg-indigo-600 text-white flex items-center justify-center rounded-xl shadow-md">
             <Beaker className="w-5 h-5" />
           </div>
-          <span className="font-heading font-black text-xl tracking-tight text-zinc-900 dark:text-white">TestHub</span>
+          <span className="font-heading font-black text-xl tracking-tight text-zinc-900 dark:text-white">QAForge</span>
         </div>
 
         <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm rounded-2xl shadow-xl shadow-indigo-100/50 dark:shadow-zinc-900/60 border border-white/60 dark:border-zinc-700/50 p-8">

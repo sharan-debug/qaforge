@@ -941,7 +941,7 @@ export default function Layout() {
 							<Beaker className="w-4 h-4" />
 						</div>
 						<span className="font-heading font-black text-base tracking-tight text-zinc-50">
-							TestHub
+							QAForge
 						</span>
 					</Link>
 				</div>

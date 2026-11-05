@@ -41,12 +41,12 @@ function Nav() {
           <div className="w-8 h-8 bg-indigo-600 text-white flex items-center justify-center rounded-xl shadow-md shadow-indigo-200/60 dark:shadow-indigo-900/60">
             <Beaker className="w-4 h-4" />
           </div>
-          <span className="font-heading font-black text-lg tracking-tight text-zinc-900 dark:text-white">TestHub</span>
+          <span className="font-heading font-black text-lg tracking-tight text-zinc-900 dark:text-white">QAForge</span>
         </div>
 
         {/* Nav links */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-zinc-500 dark:text-zinc-400">
-          <a href="#problem" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Why TestHub</a>
+          <a href="#problem" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Why QAForge</a>
           <a href="#features" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Features</a>
           <a href="#ai" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">AI Assistant</a>
         </nav>
@@ -79,7 +79,7 @@ function Hero() {
       </h1>
       <p className="text-lg text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto leading-relaxed mb-10"
          style={{ textWrap: "balance" }}>
-        TestHub is your team's single source of truth for test data, Redis keys,
+        QAForge is your team's single source of truth for test data, Redis keys,
         mocking steps, automation APIs, and feature flags — searchable in seconds,
         no Slack thread required.
       </p>
@@ -88,7 +88,7 @@ function Hero() {
           to="/login"
           className="inline-flex items-center gap-2 h-11 px-6 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors shadow-md shadow-indigo-200/60 dark:shadow-indigo-900/60"
         >
-          Go to TestHub <ArrowRight className="w-4 h-4" />
+          Go to QAForge <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 
@@ -268,7 +268,7 @@ function AISection() {
               Ask instead of search
             </h2>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-6">
-              The built-in AI assistant reads your entire TestHub knowledge base.
+              The built-in AI assistant reads your entire QAForge knowledge base.
               Ask in plain English — it answers with the exact stored data and
               tells you which feature it came from.
             </p>
@@ -338,7 +338,7 @@ function CTASection() {
           to="/login"
           className="inline-flex items-center gap-2 h-11 px-8 text-sm bg-white hover:bg-indigo-50 text-indigo-700 rounded-xl font-semibold transition-colors shadow-md"
         >
-          Sign in to TestHub <ArrowRight className="w-4 h-4" />
+          Sign in to QAForge <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 

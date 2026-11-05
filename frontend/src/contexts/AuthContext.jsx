@@ -1,3 +1,4 @@
+// biome-ignore assist/source/organizeImports: false positive
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { api } from "../lib/api";
 
@@ -25,7 +26,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try { await api.post("/auth/logout"); } catch (e) {}
     setUser(null);
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (

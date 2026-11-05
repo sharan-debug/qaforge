@@ -1,4 +1,4 @@
-// biome-ignore assist/source/organizeImports: <explanation>
+// biome-ignore assist/source/organizeImports: imports are intentionally ordered for readability
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { Link, useLocation, useNavigate, useOutletContext } from "react-router-dom";
