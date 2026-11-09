@@ -46,6 +46,7 @@ export default function ChatAgent({ open, onOpenChange, overlay = false }) {
   const [streaming, setStreaming] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [feedback, setFeedback] = useState({});
+  const [mode, setMode] = useState("crisp"); // "crisp" | "detailed"
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function ChatAgent({ open, onOpenChange, overlay = false }) {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, session_id: sessionId }),
+        body: JSON.stringify({ message: text, session_id: sessionId, mode }),
       });
       if (!res.ok) throw new Error("Chat request failed");
       const reader = res.body.getReader();
@@ -273,6 +274,15 @@ export default function ChatAgent({ open, onOpenChange, overlay = false }) {
             />
             <button
               type="button"
+              data-testid="chat-mode-toggle"
+              aria-label="Toggle response mode"
+              onClick={() => setMode((m) => (m === "crisp" ? "detailed" : "crisp"))}
+              className="h-10 px-3 text-xs font-mono border border-slate-200 dark:border-[#222A3A] rounded-lg bg-white dark:bg-[#1C2333] text-slate-600 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
+            >
+              {mode === "crisp" ? "Crisp" : "Detailed"}
+            </button>
+            <button
+              type="button"
               data-testid="chat-send-button"
               onClick={sendMessage}
               disabled={streaming || !input.trim()}
@@ -444,6 +454,15 @@ export default function ChatAgent({ open, onOpenChange, overlay = false }) {
             disabled={streaming}
             className="flex-1 h-10 px-3 text-sm border border-zinc-200 dark:border-zinc-700 rounded-sm bg-white dark:bg-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           />
+          <button
+            type="button"
+            data-testid="chat-mode-toggle"
+            aria-label="Toggle response mode"
+            onClick={() => setMode((m) => (m === "crisp" ? "detailed" : "crisp"))}
+            className="h-10 px-3 text-xs font-mono border border-zinc-200 dark:border-zinc-700 rounded-sm bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+          >
+            {mode === "crisp" ? "Crisp" : "Detailed"}
+          </button>
           <button
             type="button"
             data-testid="chat-send-button"

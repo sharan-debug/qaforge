@@ -48,6 +48,7 @@ export default function AgentPage() {
   const [streaming, setStreaming] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [feedback, setFeedback]   = useState({});
+  const [mode, setMode]           = useState("crisp"); // "crisp" | "detailed"
   const scrollRef = useRef(null);
   const inputRef  = useRef(null);
   const navigate  = useNavigate();
@@ -70,7 +71,7 @@ export default function AgentPage() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, session_id: sessionId }),
+        body: JSON.stringify({ message: text, session_id: sessionId, mode }),
       });
       if (!res.ok) throw new Error("Chat request failed");
       const reader  = res.body.getReader();
@@ -288,6 +289,15 @@ export default function AgentPage() {
             disabled={streaming}
             className="flex-1 h-10 px-3 text-sm border border-[#E2E8F0] dark:border-[#222A3A] rounded-xl bg-white dark:bg-[#1C2333] text-slate-800 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent disabled:opacity-50 transition-all"
           />
+          <button
+            type="button"
+            data-testid="chat-mode-toggle"
+            aria-label="Toggle response mode"
+            onClick={() => setMode((m) => (m === "crisp" ? "detailed" : "crisp"))}
+            className="h-10 px-3 text-xs font-mono border border-[#E2E8F0] dark:border-[#222A3A] rounded-xl bg-white dark:bg-[#1C2333] text-slate-600 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
+          >
+            {mode === "crisp" ? "Crisp" : "Detailed"}
+          </button>
           <button
             type="button"
             data-testid="chat-send-button"

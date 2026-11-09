@@ -20,6 +20,13 @@ async def list_tags(request: Request):
     return sorted([t for t in tags if t and t.strip()])
 
 
+@router.get("/owners")
+async def list_owners(request: Request):
+    await get_current_user(request)
+    owners = await db.features.distinct("owner", {"is_deleted": {"$ne": True}})
+    return sorted([o for o in owners if o and str(o).strip()])
+
+
 @router.get("/stats")
 async def get_stats(request: Request):
     await get_current_user(request)
