@@ -246,9 +246,11 @@ async def pending_count(request: Request):
 
 
 @router.get("")
-async def list_features(request: Request, q: Optional[str] = None, tag: Optional[str] = None, owner: Optional[str] = None):
+async def list_features(request: Request, q: Optional[str] = None, tag: Optional[str] = None, owner: Optional[str] = None, limit: int = 1000, pending: Optional[bool] = None):
     await get_current_user(request)
     query: Dict[str, Any] = {"is_deleted": {"$ne": True}}
+    if pending is True:
+        query["pending_review"] = True
     if q:
         rx = {"$regex": q, "$options": "i"}
         query["$or"] = [
@@ -272,7 +274,7 @@ async def list_features(request: Request, q: Optional[str] = None, tag: Optional
         query["tags"] = tag
     if owner:
         query["owner"] = owner
-    docs = await db.features.find(query, {"_id": 0}).sort("updated_at", -1).to_list(1000)
+    docs = await db.features.find(query, {"_id": 0}).sort("updated_at", -1).to_list(min(limit, 1000))
     return docs
 
 

@@ -14,6 +14,8 @@ import AdminCoreFeatures from "./pages/AdminCoreFeatures";
 import AdminUsers from "./pages/AdminUsers";
 import QuickAdd from "./pages/QuickAdd";
 import QAActionsPage from "./pages/QAActionsPage";
+import AgentPage from "./pages/AgentPage";
+import AdminAIFeedback from "./pages/AdminAIFeedback";
 import Layout from "./components/Layout";
 import { Toaster } from "sonner";
 
@@ -27,6 +29,13 @@ function ProtectedRoute({ children }) {
     );
   }
   if (!user) return <Navigate to="/login" replace />;
+  return children;
+}
+
+function RoleRoute({ roles, children }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user || !roles.includes(user.role)) return <Navigate to="/" replace />;
   return children;
 }
 
@@ -60,9 +69,11 @@ function AppRouter() {
         <Route path="features/:id" element={<FeatureDetail />} />
         <Route path="features/:id/edit" element={<FeatureEdit />} />
         <Route path="import" element={<ImportPage />} />
-        <Route path="admin/core-features" element={<AdminCoreFeatures />} />
-        <Route path="admin/users" element={<AdminUsers />} />
+        <Route path="admin/core-features" element={<RoleRoute roles={["admin"]}><AdminCoreFeatures /></RoleRoute>} />
+        <Route path="admin/users" element={<RoleRoute roles={["admin"]}><AdminUsers /></RoleRoute>} />
+        <Route path="admin/ai-feedback" element={<RoleRoute roles={["admin", "approver"]}><AdminAIFeedback /></RoleRoute>} />
         <Route path="qa" element={<QAActionsPage />} />
+        <Route path="agent" element={<AgentPage />} />
       </Route>
     </Routes>
   );
