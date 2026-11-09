@@ -1,5 +1,5 @@
 import { Clock, Search, Upload, Zap } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { api } from "../lib/api";
@@ -12,7 +12,10 @@ function featureRowBorder(f) {
 
 export default function Features() {
   const [features, setFeatures] = useState([]);
+  const [allTags, setAllTags] = useState([]);
+  const [pendingCount, setPendingCount] = useState(0);
   const [q, setQ] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
   const [activeTag, setActiveTag] = useState("");
   const [activeFilter, setActiveFilter] = useState("all"); // "all" | "pending"
   const [loading, setLoading] = useState(true);
@@ -22,59 +25,50 @@ export default function Features() {
   const canEdit = user?.role !== "viewer";
   const canReview = user?.role === "approver" || user?.role === "admin";
 
-  const load = useCallback(async () => {
+  // Debounce search input — wait 300ms before firing the backend query
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(q), 300);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  const load = useCallback(async (search, tag, filter) => {
     setLoading(true);
     try {
-      const r = await api.get("/features");
+      const params = new URLSearchParams();
+      if (search) params.set("q", search);
+      if (tag) params.set("tag", tag);
+      if (filter === "pending") params.set("pending", "true");
+      const r = await api.get(`/features?${params.toString()}`);
       setFeatures(r.data);
     } catch (e) { console.error(e); }
     setLoading(false);
   }, []);
 
+  // Fetch tags and pending count from backend (not derived from loaded features)
+  const loadMeta = useCallback(async () => {
+    const [tagsRes, countRes] = await Promise.allSettled([
+      api.get("/tags"),
+      api.get("/features/pending-count"),
+    ]);
+    if (tagsRes.status === "fulfilled") setAllTags(tagsRes.value.data);
+    if (countRes.status === "fulfilled") setPendingCount(countRes.value.data.count ?? 0);
+  }, []);
+
   useEffect(() => {
-    load();
+    loadMeta();
     api.get("/core-features").then((r) => {
       const map = {};
       for (const cf of r.data) { map[cf.id] = cf.name; }
       setCoreFeaturesMap(map);
     }).catch(() => {});
-  }, [load]);
+  }, [loadMeta]);
 
-  const allTags = useMemo(() => {
-    const s = new Set();
-    for (const f of features) {
-      for (const t of (f.tags || [])) s.add(t);
-    }
-    return Array.from(s);
-  }, [features]);
+  useEffect(() => {
+    load(debouncedQ, activeTag, activeFilter);
+  }, [load, debouncedQ, activeTag, activeFilter]);
 
-  const pendingCount = useMemo(() => features.filter((f) => {
-    if (!f.pending_review) return false;
-    if (canReview && f.assigned_approver_id && f.assigned_approver_id !== user?.user_id) return false;
-    return true;
-  }).length, [features, canReview, user?.user_id]);
-
-  const filtered = useMemo(() => {
-    const query = q.trim().toLowerCase();
-    return features.filter((f) => {
-      if (activeFilter === "pending") {
-        if (!f.pending_review) return false;
-        if (canReview && f.assigned_approver_id && f.assigned_approver_id !== user?.user_id) return false;
-      }
-      if (activeTag && !(f.tags || []).includes(activeTag)) return false;
-      if (!query) return true;
-      const hay = [
-        f.name, f.jira_ticket, f.description, f.owner,
-        ...(f.tags || []),
-        f.test_data, f.test_steps, f.mocking_steps,
-        ...(f.apis || []).flatMap((a) => [a.curl, a.description]),
-        ...(f.mongo_collections || []).flatMap((m) => [m.key, m.description]),
-        ...(f.redis_keys || []).flatMap((r) => [r.key, r.description]),
-        ...(f.experiments || []).flatMap((e) => [e.key, e.description]),
-      ].filter(Boolean).join(" ").toLowerCase();
-      return hay.includes(query);
-    });
-  }, [features, q, activeTag, activeFilter, canReview, user?.user_id]);
+  // filtered is now just the already-filtered response from the backend
+  const filtered = features;
 
   return (
     <div className="p-6 md:p-8 max-w-6xl">

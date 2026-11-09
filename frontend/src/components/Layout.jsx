@@ -8,6 +8,7 @@ import {
 	LayoutDashboard,
 	Library,
 	LogOut,
+	MessageSquareWarning,
 	Settings,
 	Sparkles,
 	Upload,
@@ -887,18 +888,29 @@ export default function Layout() {
 	const navigate = useNavigate();
 	const [chatOpen, setChatOpen] = useState(false);
 	const [reviewCount, setReviewCount] = useState(0);
+	const [feedbackCount, setFeedbackCount] = useState(0);
 
 	const canReview = user?.role === "approver" || user?.role === "admin";
 
 	useEffect(() => {
 		if (!canReview) {
 			setReviewCount(0);
+			setFeedbackCount(0);
 			return;
 		}
-		api
-			.get("/features/pending-count")
-			.then((r) => setReviewCount(r.data.count ?? 0))
-			.catch(() => {});
+		const fetchCounts = () => {
+			api
+				.get("/features/pending-count")
+				.then((r) => setReviewCount(r.data.count ?? 0))
+				.catch(() => {});
+			api
+				.get("/ai/feedback/count")
+				.then((r) => setFeedbackCount(r.data.count ?? 0))
+				.catch(() => {});
+		};
+		fetchCounts();
+		const interval = setInterval(fetchCounts, 30000);
+		return () => clearInterval(interval);
 	}, [canReview]);
 
 	const navItems = [
@@ -922,25 +934,25 @@ export default function Layout() {
 	const navCls = ({ isActive }) =>
 		`group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-200 ease-in-out border-l-2 ${
 			isActive
-				? "bg-zinc-800 text-indigo-400 border-indigo-500 font-medium"
-				: "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 border-transparent"
+				? "bg-blue-50 text-blue-700 border-blue-600 font-semibold dark:bg-zinc-800 dark:text-indigo-400 dark:border-indigo-500"
+				: "text-slate-500 hover:bg-slate-50 hover:text-slate-700 border-transparent dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
 		}`;
 
 	return (
-		<div className="min-h-screen flex bg-slate-50 dark:bg-zinc-950 transition-colors duration-200 ease-in-out">
+		<div className="min-h-screen flex bg-[#F8FAFC] dark:bg-[#0B0F17] transition-colors duration-200 ease-in-out">
 			{/* Sidebar */}
-			<aside className="w-60 shrink-0 bg-zinc-900 dark:bg-zinc-950 border-r border-zinc-800 flex flex-col sticky top-0 h-screen overflow-y-auto z-10">
+			<aside className="w-60 shrink-0 bg-white dark:bg-[#080B12] border-r border-[#E2E8F0] dark:border-[#1A2030] flex flex-col sticky top-0 h-screen overflow-y-auto z-10">
 				{/* Brand */}
-				<div className="p-5 border-b border-zinc-800">
+				<div className="p-5 border-b border-[#E2E8F0] dark:border-zinc-800">
 					<Link
 						to="/"
 						className="flex items-center gap-2"
 						data-testid="brand-link"
 					>
-						<div className="w-8 h-8 bg-indigo-600 text-white flex items-center justify-center rounded-xl shadow-sm shadow-indigo-200">
+						<div className="w-8 h-8 bg-blue-600 text-white flex items-center justify-center rounded-xl shadow-sm">
 							<Beaker className="w-4 h-4" />
 						</div>
-						<span className="font-heading font-black text-base tracking-tight text-zinc-50">
+						<span className="font-heading font-black text-base tracking-tight text-slate-800 dark:text-zinc-50">
 							QAForge
 						</span>
 					</Link>
@@ -961,13 +973,13 @@ export default function Layout() {
 									<item.icon
 										className={`w-4 h-4 transition-colors duration-200 ${
 											isActive
-												? "text-indigo-400"
-												: "text-zinc-500 group-hover:text-zinc-300"
+												? "text-blue-600 dark:text-indigo-400"
+												: "text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300"
 										}`}
 									/>
 									<span className="flex-1">{item.label}</span>
 									{item.badge > 0 && (
-										<span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-amber-500 text-white text-[10px] font-bold leading-none">
+										<span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold leading-none dark:bg-amber-500 dark:text-white">
 											{item.badge > 99 ? "99+" : item.badge}
 										</span>
 									)}
@@ -976,17 +988,18 @@ export default function Layout() {
 						</NavLink>
 					))}
 
+					{/* Ask the Agent — purple, AI-exclusive, navigates to /agent */}
 					<button
 						type="button"
 						data-testid="open-chat-button"
-						onClick={() => setChatOpen((o) => !o)}
+						onClick={() => navigate("/agent")}
 						className={`group w-full flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-200 ease-in-out border-l-2 ${
 							chatOpen
-								? "bg-red-950/40 text-red-400 border-red-400 font-medium"
-								: "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 border-transparent"
+								? "bg-violet-50 text-violet-700 border-violet-600 font-semibold dark:bg-violet-950/40 dark:text-violet-300 dark:border-violet-500"
+								: "text-slate-500 hover:bg-violet-50 hover:text-violet-700 border-transparent dark:text-zinc-400 dark:hover:bg-violet-950/30 dark:hover:text-violet-300"
 						}`}
 					>
-						<Sparkles className={`w-4 h-4 transition-colors duration-200 ${chatOpen ? "text-red-400" : "text-zinc-500 group-hover:text-zinc-300"}`} />
+						<Sparkles className={`w-4 h-4 transition-colors duration-200 ${chatOpen ? "text-violet-600 dark:text-violet-400" : "text-slate-400 group-hover:text-violet-500 dark:text-zinc-500 dark:group-hover:text-violet-400"}`} />
 						Ask the Agent
 					</button>
 
@@ -997,8 +1010,8 @@ export default function Layout() {
 									<FlaskConical
 										className={`w-4 h-4 transition-colors duration-200 ${
 											isActive
-												? "text-indigo-400"
-												: "text-zinc-500 group-hover:text-zinc-300"
+												? "text-blue-600 dark:text-indigo-400"
+												: "text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300"
 										}`}
 									/>
 									QA Actions
@@ -1010,7 +1023,7 @@ export default function Layout() {
 					{user?.role === "admin" && (
 						<>
 							<div className="px-3 pt-4 pb-1">
-								<span className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
+								<span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-zinc-600">
 									Admin
 								</span>
 							</div>
@@ -1024,8 +1037,8 @@ export default function Layout() {
 										<Settings
 											className={`w-4 h-4 transition-colors duration-200 ${
 												isActive
-													? "text-indigo-400"
-													: "text-zinc-500 group-hover:text-zinc-300"
+													? "text-blue-600 dark:text-indigo-400"
+													: "text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300"
 											}`}
 										/>
 										Core Features
@@ -1042,11 +1055,46 @@ export default function Layout() {
 										<UserCog
 											className={`w-4 h-4 transition-colors duration-200 ${
 												isActive
-													? "text-indigo-400"
-													: "text-zinc-500 group-hover:text-zinc-300"
+													? "text-blue-600 dark:text-indigo-400"
+													: "text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300"
 											}`}
 										/>
 										Users
+									</>
+								)}
+							</NavLink>
+						</>
+					)}
+
+					{canReview && (
+						<>
+							{user?.role !== "admin" && (
+								<div className="px-3 pt-4 pb-1">
+									<span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-zinc-600">
+										Review
+									</span>
+								</div>
+							)}
+							<NavLink
+								to="/admin/ai-feedback"
+								data-testid="nav-admin-ai-feedback"
+								className={navCls}
+							>
+								{({ isActive }) => (
+									<>
+										<MessageSquareWarning
+											className={`w-4 h-4 transition-colors duration-200 ${
+												isActive
+													? "text-violet-600 dark:text-violet-400"
+													: "text-slate-400 group-hover:text-violet-500 dark:text-zinc-500 dark:group-hover:text-violet-400"
+											}`}
+										/>
+										<span className="flex-1">AI Feedback</span>
+										{feedbackCount > 0 && (
+											<span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-violet-100 text-violet-700 text-[10px] font-bold leading-none dark:bg-violet-500 dark:text-white">
+												{feedbackCount > 99 ? "99+" : feedbackCount}
+											</span>
+										)}
 									</>
 								)}
 							</NavLink>
@@ -1056,12 +1104,12 @@ export default function Layout() {
 
 				{/* Quick Add */}
 				{user?.role !== "viewer" && (
-					<div className="p-3 border-t border-zinc-800">
+					<div className="p-3 border-t border-[#E2E8F0] dark:border-zinc-800">
 						<button
 							data-testid="new-feature-button"
 							type="button"
 							onClick={() => navigate("/features/quick-add")}
-							className="w-full h-9 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 transition-colors duration-200 shadow-sm shadow-indigo-200"
+							className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-colors duration-200 shadow-sm dark:shadow-none dark:bg-indigo-600 dark:hover:bg-indigo-700"
 						>
 							<Zap className="w-4 h-4" /> Quick Add
 						</button>
@@ -1070,26 +1118,26 @@ export default function Layout() {
 
 				{/* Profile card */}
 				{user && (
-					<div className="p-3 border-t border-zinc-800 flex items-center gap-2.5">
+					<div className="p-3 border-t border-[#E2E8F0] dark:border-zinc-800 flex items-center gap-2.5">
 						{/* Avatar */}
-						<div className="w-8 h-8 bg-indigo-950/60 rounded-full flex items-center justify-center text-sm font-semibold text-indigo-400 shrink-0">
+						<div className="w-8 h-8 bg-blue-50 dark:bg-indigo-950/60 rounded-full flex items-center justify-center text-sm font-semibold text-blue-600 dark:text-indigo-400 shrink-0">
 							{user.name?.[0]?.toUpperCase() || "?"}
 						</div>
 
 						{/* Name / email / role */}
 						<div className="flex-1 min-w-0">
 							<div
-								className="text-sm font-semibold truncate text-zinc-100 leading-tight"
+								className="text-sm font-semibold truncate text-slate-700 dark:text-zinc-100 leading-tight"
 								data-testid="current-user-name"
 							>
 								{user.name}
 							</div>
-							<div className="text-[11px] text-zinc-500 truncate leading-tight mt-0.5">
+							<div className="text-[11px] text-slate-400 dark:text-zinc-500 truncate leading-tight mt-0.5">
 								{user.email}
 							</div>
 							{user.role && (
 								<span
-									className="inline-block text-[10px] font-mono px-1.5 py-0.5 mt-1 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700"
+									className="inline-block text-[10px] font-mono px-1.5 py-0.5 mt-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"
 									data-testid="user-role-badge"
 								>
 									{user.role}
@@ -1104,7 +1152,7 @@ export default function Layout() {
 								type="button"
 								data-testid="logout-button"
 								onClick={logout}
-								className="w-9 h-9 flex items-center justify-center text-zinc-500 hover:text-zinc-200 rounded-lg hover:bg-zinc-800 transition-all duration-200"
+								className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 dark:text-zinc-500 dark:hover:text-zinc-200 dark:hover:bg-zinc-800 transition-all duration-200"
 								title="Logout"
 							>
 								<LogOut className="w-4 h-4" />
@@ -1114,9 +1162,9 @@ export default function Layout() {
 				)}
 			</aside>
 
-			{/* Main content + agent panel — side-by-side when chat is open */}
+			{/* Main content + agent side panel */}
 			<div className="flex flex-1 min-w-0">
-				<main className="flex-1 min-h-screen min-w-0 bg-slate-50/50 dark:bg-zinc-950 overflow-x-hidden overflow-y-auto transition-all duration-300 ease-in-out relative">
+				<main className="flex-1 min-h-screen min-w-0 bg-[#F8FAFC] dark:bg-[#0B0F17] overflow-x-hidden overflow-y-auto transition-all duration-300 ease-in-out relative">
 					<LightBackground />
 					<DarkBackground />
 					<div className="relative z-[1]">

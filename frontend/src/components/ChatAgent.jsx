@@ -40,7 +40,7 @@ function renderContent(text) {
   });
 }
 
-export default function ChatAgent({ open, onOpenChange }) {
+export default function ChatAgent({ open, onOpenChange, overlay = false }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -141,6 +141,150 @@ export default function ChatAgent({ open, onOpenChange }) {
   };
 
   if (!open) return null;
+
+  // Overlay mode: covers the main content area as an absolute panel
+  if (overlay) {
+    return (
+      <div
+        className="absolute inset-0 z-20 flex flex-col bg-[#FAFAFA] dark:bg-[#161B26]"
+        style={{ backdropFilter: "blur(2px)" }}
+      >
+        <div className="p-5 border-b border-zinc-200 dark:border-[#222A3A] bg-white dark:bg-[#161B26] flex items-start justify-between shrink-0">
+          <div>
+            <div className="flex items-center gap-2 font-heading font-bold text-lg tracking-tight text-slate-800 dark:text-zinc-100">
+              <Sparkles className="w-4 h-4 text-violet-600" />
+              Ask the Agent
+            </div>
+            <p className="text-xs text-slate-400 dark:text-zinc-500 font-mono mt-0.5">Claude · grounded on your team's features</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+            data-testid="chat-close-button"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-5" data-testid="chat-panel">
+          {messages.length === 0 && (
+            <div className="max-w-2xl mx-auto space-y-3 pt-6">
+              <p className="text-sm text-slate-500 dark:text-zinc-400">Try asking:</p>
+              {[
+                "What are the mocks for the checkout flow?",
+                "Which Redis keys are used by the cancellation feature?",
+                "List all POST APIs tagged 'payments'",
+              ].map((s, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  data-testid={`suggested-question-${i}`}
+                  onClick={() => setInput(s)}
+                  className="block w-full text-left text-sm p-3.5 bg-white dark:bg-[#1C2333] border border-slate-200 dark:border-[#222A3A] rounded-xl hover:border-violet-300 dark:hover:border-violet-700 text-slate-700 dark:text-zinc-300 transition-colors"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="max-w-2xl mx-auto space-y-5">
+            {messages.map((m, i) => (
+              <div key={i} className={`flex gap-3 ${m.role === "user" ? "justify-end" : ""}`}>
+                {m.role === "assistant" && (
+                  <div className="w-7 h-7 shrink-0 bg-violet-600 text-white rounded-lg flex items-center justify-center">
+                    <Bot className="w-3.5 h-3.5" />
+                  </div>
+                )}
+                <div className="max-w-[85%] flex flex-col gap-2">
+                  <div
+                    className={`chat-markdown text-sm px-4 py-3 rounded-xl ${
+                      m.role === "user"
+                        ? "bg-slate-800 dark:bg-zinc-700 text-white"
+                        : "bg-white dark:bg-[#1C2333] border border-slate-200 dark:border-[#222A3A] text-slate-900 dark:text-zinc-100"
+                    }`}
+                    data-testid={`chat-msg-${m.role}`}
+                  >
+                    {m.content ? renderContent(m.content) : <span className="text-slate-400">…</span>}
+                  </div>
+                  {m.role === "assistant" && m.content && !streaming && (
+                    <div className="pl-1 flex flex-col gap-1.5">
+                      {(m.sources || []).length > 0 && (
+                        <div className="flex flex-wrap gap-1.5" data-testid="chat-sources">
+                          <span className="text-[10px] font-mono text-slate-400 self-center">sources:</span>
+                          {m.sources.map((s) => (
+                            <Link
+                              key={s.id}
+                              to={`/features/${s.id}`}
+                              onClick={() => onOpenChange(false)}
+                              className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 hover:bg-violet-100 transition-colors"
+                              data-testid={`chat-source-${s.id}`}
+                            >
+                              {s.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                      {feedback[i]?.submitted ? (
+                        <p className="text-[10px] font-mono text-slate-400">Thanks for the feedback.</p>
+                      ) : feedback[i]?.open ? (
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 flex flex-col gap-2">
+                          <p className="text-[10px] font-mono text-amber-700 uppercase tracking-wide">What's incorrect?</p>
+                          <textarea
+                            value={feedback[i].text}
+                            onChange={(e) => setFeedback((f) => ({ ...f, [i]: { ...f[i], text: e.target.value } }))}
+                            placeholder="Describe what's wrong…"
+                            rows={2}
+                            className="w-full px-2 py-1.5 text-xs border border-amber-300 rounded-lg bg-white resize-none focus:outline-none focus:ring-1 focus:ring-amber-400"
+                          />
+                          <div className="flex gap-1.5">
+                            <button type="button" onClick={() => submitFeedback(i)} disabled={!feedback[i]?.text?.trim()} className="h-7 px-3 text-[11px] bg-amber-600 hover:bg-amber-700 text-white rounded-lg disabled:opacity-40">Submit</button>
+                            <button type="button" onClick={() => closeFeedback(i)} className="h-7 px-3 text-[11px] border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600">Cancel</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button type="button" onClick={() => openFeedback(i)} className="self-start flex items-center gap-1 text-[10px] font-mono text-slate-400 hover:text-amber-600 transition-colors">
+                          <ThumbsDown className="w-3 h-3" /> Flag incorrect
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {m.role === "user" && (
+                  <div className="w-7 h-7 shrink-0 bg-slate-200 dark:bg-zinc-600 text-slate-700 dark:text-zinc-200 rounded-lg flex items-center justify-center">
+                    <User className="w-3.5 h-3.5" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-slate-200 dark:border-[#222A3A] bg-white dark:bg-[#161B26] shrink-0">
+          <div className="max-w-2xl mx-auto flex gap-2">
+            <input
+              data-testid="chat-input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              placeholder="Ask about features, mocks, APIs, Redis keys…"
+              disabled={streaming}
+              className="flex-1 h-10 px-3 text-sm border border-slate-200 dark:border-[#222A3A] rounded-lg bg-white dark:bg-[#1C2333] dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
+            />
+            <button
+              type="button"
+              data-testid="chat-send-button"
+              onClick={sendMessage}
+              disabled={streaming || !input.trim()}
+              className="h-10 px-4 bg-violet-600 hover:bg-violet-700 text-white rounded-lg disabled:opacity-40 transition-colors"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-[420px] shrink-0 sticky top-0 h-screen bg-[#FAFAFA] dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden">

@@ -189,6 +189,60 @@ async def submit_feedback(payload: AIFeedbackIn, request: Request):
         "feedback": payload.feedback.strip()[:1000],
         "feature_ids": payload.feature_ids,
         "user_email": user.email,
+        "user_name": user.name,
+        "timestamp": now_iso(),
+        "status": "pending",   # pending | reviewed | dismissed
+        "reviewed_by": None,
+        "reviewed_at": None,
+        "review_note": "",
+    })
+    return {"status": "ok"}
+
+
+@router.get("/ai/feedback")
+async def list_feedback(request: Request, status: str = "pending"):
+    user = await get_current_user(request)
+    if user.role not in ("admin", "approver"):
+        raise HTTPException(status_code=403, detail="Insufficient role")
+    query = {} if status == "all" else {"status": status}
+    docs = await db.ai_feedback.find(query, {"_id": 0}).sort("timestamp", -1).to_list(200)
+    return docs
+
+
+@router.get("/ai/feedback/count")
+async def feedback_pending_count(request: Request):
+    user = await get_current_user(request)
+    if user.role not in ("admin", "approver"):
+        return {"count": 0}
+    count = await db.ai_feedback.count_documents({"status": "pending"})
+    return {"count": count}
+
+
+@router.patch("/ai/feedback/{feedback_id}")
+async def update_feedback_status(feedback_id: str, payload: dict, request: Request):
+    user = await get_current_user(request)
+    if user.role not in ("admin", "approver"):
+        raise HTTPException(status_code=403, detail="Insufficient role")
+    new_status = payload.get("status")
+    if new_status not in ("reviewed", "dismissed"):
+        raise HTTPException(status_code=400, detail="status must be 'reviewed' or 'dismissed'")
+    result = await db.ai_feedback.update_one(
+        {"id": feedback_id},
+        {"$set": {
+            "status": new_status,
+            "reviewed_by": user.email,
+            "reviewed_at": now_iso(),
+            "review_note": payload.get("review_note", "")[:500],
+        }},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Feedback not found")
+    await db.audit_log.insert_one({
+        "id": f"aud_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "user_name": user.name,
+        "action": f"ai_feedback_{new_status}",
+        "feature_name": f"feedback/{feedback_id}",
         "timestamp": now_iso(),
     })
     return {"status": "ok"}
