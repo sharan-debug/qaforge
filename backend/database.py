@@ -33,6 +33,24 @@ async def ensure_indexes():
     await db.features.create_index("tags")
     await db.features.create_index("core_feature_id")
     await db.features.create_index("status")
+    # Free, built-in full-text index over all searchable fields (future $text search).
+    await db.features.create_index([
+        ("name", "text"),
+        ("description", "text"),
+        ("jira_ticket", "text"),
+        ("tags", "text"),
+        ("test_data", "text"),
+        ("test_steps", "text"),
+        ("mocking_steps", "text"),
+        ("apis.curl", "text"),
+        ("apis.description", "text"),
+        ("mongo_collections.key", "text"),
+        ("mongo_collections.description", "text"),
+        ("redis_keys.key", "text"),
+        ("redis_keys.description", "text"),
+        ("experiments.key", "text"),
+        ("experiments.description", "text"),
+    ], name="features_text")
 
     await db.users.create_index("email", unique=True)
     await db.user_sessions.create_index("session_token", unique=True)

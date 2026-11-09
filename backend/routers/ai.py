@@ -25,6 +25,8 @@ def build_knowledge_context(features: List[Dict[str, Any]]) -> str:
             lines.append(f"Owner: {f['owner']}")
         if f.get("tags"):
             lines.append(f"Tags: {', '.join(f['tags'])}")
+        if f.get("related_features"):
+            lines.append(f"Related features: {f['related_features']}")
         if f.get("test_data"):
             lines.append(f"Test Data:\n{f['test_data']}")
         if f.get("test_steps"):
@@ -53,12 +55,25 @@ async def chat(payload: ChatMessageIn, request: Request):
     features = await db.features.find({}, {"_id": 0}).sort("updated_at", -1).to_list(200)
     kb = build_knowledge_context(features)
 
+    mode = (payload.mode or "crisp").lower()
+    if mode not in ("crisp", "detailed"):
+        mode = "crisp"
+    mode_instruction = (
+        "Response style: CRISP — keep answers short (2-4 sentences or a compact list), "
+        "skip preamble, give only the essential facts.\n"
+        if mode == "crisp"
+        else
+        "Response style: DETAILED — give thorough explanations with context, examples, "
+        "and step-by-step reasoning where helpful.\n"
+    )
+
     system_message = (
         "You are the QA Knowledge Assistant for an engineering team. "
         "Answer questions about features, test data, test steps, mocking steps, "
         "APIs, MongoDB collections, Redis keys, and experiments using ONLY the knowledge base below. "
         "If the answer is not in the knowledge base, say so clearly and suggest the user add the info. "
-        "Be concise, use markdown lists / code fences for endpoints, keys and steps.\n\n"
+        "Be concise, use markdown lists / code fences for endpoints, keys and steps.\n"
+        + mode_instruction + "\n"
         "=== TESTHUB QA ACTIONS (IMPORTANT) ===\n"
         "TestHub has a built-in QA Actions page (navigate to /qa in the sidebar) that connects "
         "directly to the QA utility. NEVER tell users to use curl, Postman, or external tools — "
@@ -189,6 +204,60 @@ async def submit_feedback(payload: AIFeedbackIn, request: Request):
         "feedback": payload.feedback.strip()[:1000],
         "feature_ids": payload.feature_ids,
         "user_email": user.email,
+        "user_name": user.name,
+        "timestamp": now_iso(),
+        "status": "pending",   # pending | reviewed | dismissed
+        "reviewed_by": None,
+        "reviewed_at": None,
+        "review_note": "",
+    })
+    return {"status": "ok"}
+
+
+@router.get("/ai/feedback")
+async def list_feedback(request: Request, status: str = "pending"):
+    user = await get_current_user(request)
+    if user.role not in ("admin", "approver"):
+        raise HTTPException(status_code=403, detail="Insufficient role")
+    query = {} if status == "all" else {"status": status}
+    docs = await db.ai_feedback.find(query, {"_id": 0}).sort("timestamp", -1).to_list(200)
+    return docs
+
+
+@router.get("/ai/feedback/count")
+async def feedback_pending_count(request: Request):
+    user = await get_current_user(request)
+    if user.role not in ("admin", "approver"):
+        return {"count": 0}
+    count = await db.ai_feedback.count_documents({"status": "pending"})
+    return {"count": count}
+
+
+@router.patch("/ai/feedback/{feedback_id}")
+async def update_feedback_status(feedback_id: str, payload: dict, request: Request):
+    user = await get_current_user(request)
+    if user.role not in ("admin", "approver"):
+        raise HTTPException(status_code=403, detail="Insufficient role")
+    new_status = payload.get("status")
+    if new_status not in ("reviewed", "dismissed"):
+        raise HTTPException(status_code=400, detail="status must be 'reviewed' or 'dismissed'")
+    result = await db.ai_feedback.update_one(
+        {"id": feedback_id},
+        {"$set": {
+            "status": new_status,
+            "reviewed_by": user.email,
+            "reviewed_at": now_iso(),
+            "review_note": payload.get("review_note", "")[:500],
+        }},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Feedback not found")
+    await db.audit_log.insert_one({
+        "id": f"aud_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "user_name": user.name,
+        "action": f"ai_feedback_{new_status}",
+        "feature_name": f"feedback/{feedback_id}",
         "timestamp": now_iso(),
     })
     return {"status": "ok"}

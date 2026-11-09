@@ -1,5 +1,5 @@
-import { Clock, Search, Upload, Zap } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { AlertTriangle, Clock, Search, Upload, Zap } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { api } from "../lib/api";
@@ -12,8 +12,14 @@ function featureRowBorder(f) {
 
 export default function Features() {
   const [features, setFeatures] = useState([]);
+  const [allTags, setAllTags] = useState([]);
+  const [allOwners, setAllOwners] = useState([]);
+  const [conflictIds, setConflictIds] = useState(new Set());
+  const [pendingCount, setPendingCount] = useState(0);
   const [q, setQ] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
   const [activeTag, setActiveTag] = useState("");
+  const [activeOwner, setActiveOwner] = useState("");
   const [activeFilter, setActiveFilter] = useState("all"); // "all" | "pending"
   const [loading, setLoading] = useState(true);
   const [coreFeaturesMap, setCoreFeaturesMap] = useState({});
@@ -22,59 +28,61 @@ export default function Features() {
   const canEdit = user?.role !== "viewer";
   const canReview = user?.role === "approver" || user?.role === "admin";
 
-  const load = useCallback(async () => {
+  // Debounce search input — wait 300ms before firing the backend query
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(q), 300);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  const load = useCallback(async (search, tag, filter, owner) => {
     setLoading(true);
     try {
-      const r = await api.get("/features");
+      const params = new URLSearchParams();
+      if (search) params.set("q", search);
+      if (tag) params.set("tag", tag);
+      if (filter === "pending") params.set("pending", "true");
+      if (owner) params.set("owner", owner);
+      const r = await api.get(`/features?${params.toString()}`);
       setFeatures(r.data);
     } catch (e) { console.error(e); }
     setLoading(false);
   }, []);
 
+  // Fetch tags and pending count from backend (not derived from loaded features)
+  const loadMeta = useCallback(async () => {
+    const [tagsRes, ownersRes, countRes, conflictsRes] = await Promise.allSettled([
+      api.get("/tags"),
+      api.get("/owners"),
+      api.get("/features/pending-count"),
+      api.get("/features/conflicts"),
+    ]);
+    if (tagsRes.status === "fulfilled") setAllTags(tagsRes.value.data);
+    if (ownersRes.status === "fulfilled") setAllOwners(ownersRes.value.data);
+    if (countRes.status === "fulfilled") setPendingCount(countRes.value.data.count ?? 0);
+    if (conflictsRes.status === "fulfilled") {
+      const ids = new Set();
+      for (const c of [...(conflictsRes.value.data.experiments || []), ...(conflictsRes.value.data.redis_keys || [])]) {
+        for (const f of c.features || []) ids.add(f.id);
+      }
+      setConflictIds(ids);
+    }
+  }, []);
+
   useEffect(() => {
-    load();
+    loadMeta();
     api.get("/core-features").then((r) => {
       const map = {};
       for (const cf of r.data) { map[cf.id] = cf.name; }
       setCoreFeaturesMap(map);
     }).catch(() => {});
-  }, [load]);
+  }, [loadMeta]);
 
-  const allTags = useMemo(() => {
-    const s = new Set();
-    for (const f of features) {
-      for (const t of (f.tags || [])) s.add(t);
-    }
-    return Array.from(s);
-  }, [features]);
+  useEffect(() => {
+    load(debouncedQ, activeTag, activeFilter, activeOwner);
+  }, [load, debouncedQ, activeTag, activeFilter, activeOwner]);
 
-  const pendingCount = useMemo(() => features.filter((f) => {
-    if (!f.pending_review) return false;
-    if (canReview && f.assigned_approver_id && f.assigned_approver_id !== user?.user_id) return false;
-    return true;
-  }).length, [features, canReview, user?.user_id]);
-
-  const filtered = useMemo(() => {
-    const query = q.trim().toLowerCase();
-    return features.filter((f) => {
-      if (activeFilter === "pending") {
-        if (!f.pending_review) return false;
-        if (canReview && f.assigned_approver_id && f.assigned_approver_id !== user?.user_id) return false;
-      }
-      if (activeTag && !(f.tags || []).includes(activeTag)) return false;
-      if (!query) return true;
-      const hay = [
-        f.name, f.jira_ticket, f.description, f.owner,
-        ...(f.tags || []),
-        f.test_data, f.test_steps, f.mocking_steps,
-        ...(f.apis || []).flatMap((a) => [a.curl, a.description]),
-        ...(f.mongo_collections || []).flatMap((m) => [m.key, m.description]),
-        ...(f.redis_keys || []).flatMap((r) => [r.key, r.description]),
-        ...(f.experiments || []).flatMap((e) => [e.key, e.description]),
-      ].filter(Boolean).join(" ").toLowerCase();
-      return hay.includes(query);
-    });
-  }, [features, q, activeTag, activeFilter, canReview, user?.user_id]);
+  // filtered is now just the already-filtered response from the backend
+  const filtered = features;
 
   return (
     <div className="p-6 md:p-8 max-w-6xl">
@@ -151,15 +159,29 @@ export default function Features() {
         </div>
       )}
 
-      <div className="mb-4 relative">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-indigo-300 dark:text-indigo-600" />
-        <input
-          data-testid="feature-search-input"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search name, description, tags, test data, Redis keys, experiments, cURL…"
-          className="w-full h-11 pl-9 pr-3 text-sm border border-indigo-100 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
-        />
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-indigo-300 dark:text-indigo-600" />
+          <input
+            data-testid="feature-search-input"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search name, description, tags, test data, Redis keys, experiments, cURL…"
+            className="w-full h-11 pl-9 pr-3 text-sm border border-indigo-100 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+          />
+        </div>
+        <select
+            data-testid="owner-filter"
+            aria-label="Filter by owner"
+            value={activeOwner}
+            onChange={(e) => setActiveOwner(e.target.value)}
+            className="h-11 px-3 text-sm border border-indigo-100 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm min-w-[180px]"
+          >
+            <option value="">All owners</option>
+            {allOwners.map((o) => (
+              <option key={o} value={o}>{o}</option>
+            ))}
+          </select>
       </div>
 
       {allTags.length > 0 && (
@@ -229,7 +251,12 @@ export default function Features() {
                   <div className="text-[10px] font-mono text-indigo-400 dark:text-indigo-500 truncate mb-0.5" data-testid={`core-feature-name-${f.id}`}>{coreFeaturesMap[f.core_feature_id]}</div>
                 )}
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <div className="font-medium text-sm truncate text-zinc-800 dark:text-zinc-200">{f.name}</div>
+                  <span className="font-medium text-sm truncate text-zinc-800 dark:text-zinc-200">{f.name}</span>
+                  {conflictIds.has(f.id) && (
+                    <span title="Experiment/Redis conflict" className="text-amber-500" data-testid={`conflict-badge-${f.id}`}>
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                    </span>
+                  )}
                   {f.pending_review && (
                     <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 shrink-0 whitespace-nowrap">
                       pending
