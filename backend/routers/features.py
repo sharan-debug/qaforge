@@ -13,7 +13,7 @@ from dependencies import get_current_user, require_role, log_activity
 router = APIRouter(prefix="/api/features")
 
 _TRACKED_FIELDS = [
-    "name", "description", "jira_ticket", "tags", "status",
+    "name", "description", "jira_ticket", "related_features", "tags", "status",
     "test_data", "test_steps", "mocking_steps", "core_feature_id",
     "apis", "mongo_collections", "redis_keys", "experiments",
 ]
@@ -224,6 +224,59 @@ async def import_features(
 
     await log_activity(user, "imported", "", f"{imported} features imported, {skipped} skipped")
     return {"imported": imported, "skipped": skipped, "errors": errors}
+
+
+@router.get("/key-usage")
+async def key_usage(request: Request):
+    await get_current_user(request)
+    _live = {"is_deleted": {"$ne": True}}
+    docs = await db.features.find(_live, {"_id": 0, "name": 1, "experiments": 1, "redis_keys": 1}).to_list(2000)
+    experiments: dict = {}
+    redis_keys: dict = {}
+    for d in docs:
+        name = d.get("name", "")
+        for e in (d.get("experiments") or []):
+            k = (e.get("key") if isinstance(e, dict) else str(e) or "").strip()
+            if k:
+                experiments.setdefault(k, []).append(name)
+        for r in (d.get("redis_keys") or []):
+            k = (r.get("key") if isinstance(r, dict) else str(r) or "").strip()
+            if k:
+                redis_keys.setdefault(k, []).append(name)
+    return {"experiments": experiments, "redis_keys": redis_keys}
+
+
+@router.get("/conflicts")
+async def list_conflicts(request: Request):
+    await get_current_user(request)
+    _live = {"is_deleted": {"$ne": True}}
+
+    async def conflicts_for(field: str):
+        pipeline = [
+            {"$match": _live},
+            {"$unwind": f"${field}"},
+            {"$group": {
+                "_id": f"${field}.key",
+                "features": {"$addToSet": {"id": "$id", "name": "$name"}},
+            }},
+            {"$match": {"_id": {"$nin": [None, ""]}}},
+            {"$match": {"$expr": {"$gt": [{"$size": "$features"}, 1]}}},
+            {"$sort": {"_id": 1}},
+        ]
+        docs = await db.features.aggregate(pipeline).to_list(200)
+        return [{"key": d["_id"], "features": d["features"]} for d in docs]
+
+    return {
+        "experiments": await conflicts_for("experiments"),
+        "redis_keys": await conflicts_for("redis_keys"),
+    }
+
+
+@router.get("/owners")
+async def list_owners(request: Request):
+    await get_current_user(request)
+    owners = await db.features.distinct("owner", {"is_deleted": {"$ne": True}})
+    return sorted([o for o in owners if o and str(o).strip()])
 
 
 @router.get("/pending-count")

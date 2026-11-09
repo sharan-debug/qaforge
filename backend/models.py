@@ -34,6 +34,7 @@ class Feature(BaseModel):
     owner: str = ""
     tags: List[str] = Field(default_factory=list)
     jira_ticket: str = ""
+    related_features: str = ""
     status: str = "active"
     test_data: str = ""
     test_steps: str = ""
@@ -64,6 +65,7 @@ class FeatureCreate(BaseModel):
     description: str = ""
     tags: List[str] = Field(default_factory=list)
     jira_ticket: str = ""
+    related_features: str = ""
     test_data: str = ""
     test_steps: str = ""
     mocking_steps: str = ""
@@ -80,6 +82,7 @@ class FeatureUpdate(BaseModel):
     description: Optional[str] = None
     tags: Optional[List[str]] = None
     jira_ticket: Optional[str] = None
+    related_features: Optional[str] = None
     status: Optional[str] = None
     test_data: Optional[str] = None
     test_steps: Optional[str] = None
@@ -142,6 +145,7 @@ class ReviewRejectIn(BaseModel):
 class ChatMessageIn(BaseModel):
     message: str
     session_id: Optional[str] = None
+    mode: Optional[str] = "crisp"  # "crisp" | "detailed"
 
 
 class AIFeedbackIn(BaseModel):

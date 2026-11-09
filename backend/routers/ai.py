@@ -25,6 +25,8 @@ def build_knowledge_context(features: List[Dict[str, Any]]) -> str:
             lines.append(f"Owner: {f['owner']}")
         if f.get("tags"):
             lines.append(f"Tags: {', '.join(f['tags'])}")
+        if f.get("related_features"):
+            lines.append(f"Related features: {f['related_features']}")
         if f.get("test_data"):
             lines.append(f"Test Data:\n{f['test_data']}")
         if f.get("test_steps"):
@@ -53,12 +55,25 @@ async def chat(payload: ChatMessageIn, request: Request):
     features = await db.features.find({}, {"_id": 0}).sort("updated_at", -1).to_list(200)
     kb = build_knowledge_context(features)
 
+    mode = (payload.mode or "crisp").lower()
+    if mode not in ("crisp", "detailed"):
+        mode = "crisp"
+    mode_instruction = (
+        "Response style: CRISP — keep answers short (2-4 sentences or a compact list), "
+        "skip preamble, give only the essential facts.\n"
+        if mode == "crisp"
+        else
+        "Response style: DETAILED — give thorough explanations with context, examples, "
+        "and step-by-step reasoning where helpful.\n"
+    )
+
     system_message = (
         "You are the QA Knowledge Assistant for an engineering team. "
         "Answer questions about features, test data, test steps, mocking steps, "
         "APIs, MongoDB collections, Redis keys, and experiments using ONLY the knowledge base below. "
         "If the answer is not in the knowledge base, say so clearly and suggest the user add the info. "
-        "Be concise, use markdown lists / code fences for endpoints, keys and steps.\n\n"
+        "Be concise, use markdown lists / code fences for endpoints, keys and steps.\n"
+        + mode_instruction + "\n"
         "=== TESTHUB QA ACTIONS (IMPORTANT) ===\n"
         "TestHub has a built-in QA Actions page (navigate to /qa in the sidebar) that connects "
         "directly to the QA utility. NEVER tell users to use curl, Postman, or external tools — "

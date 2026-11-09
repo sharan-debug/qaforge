@@ -56,6 +56,7 @@ export default function FeatureDetail() {
   const canReview = user?.role === "approver" || user?.role === "admin";
   const canDelete = canReview;
   const [feature, setFeature] = useState(null);
+  const [conflicts, setConflicts] = useState({ experiments: [], redis_keys: [] });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
@@ -68,6 +69,7 @@ export default function FeatureDetail() {
     try {
       const r = await api.get(`/features/${id}`);
       setFeature(r.data);
+      api.get("/features/conflicts").then((c) => setConflicts(c.data)).catch(() => {});
     } catch (e) {
       toast.error("Feature not found");
       navigate("/features");
@@ -232,6 +234,9 @@ export default function FeatureDetail() {
             )}
             {feature.jira_ticket && (
               <span>jira: <span className="text-slate-700 dark:text-zinc-300">{feature.jira_ticket}</span></span>
+            )}
+            {feature.related_features && (
+              <span>related: <span className="text-slate-700 dark:text-zinc-300">{feature.related_features}</span></span>
             )}
             <span>updated: {new Date(feature.updated_at).toLocaleString()}</span>
             {feature.created_by && (
@@ -398,6 +403,34 @@ export default function FeatureDetail() {
           </div>
         </div>
       )}
+
+      {/* Conflict warnings */}
+      {(() => {
+        const expConflicts = (conflicts.experiments || []).filter((c) =>
+          (c.features || []).some((f) => f.id === id)
+        );
+        const redisConflicts = (conflicts.redis_keys || []).filter((c) =>
+          (c.features || []).some((f) => f.id === id)
+        );
+        if (expConflicts.length === 0 && redisConflicts.length === 0) return null;
+        return (
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 space-y-2" data-testid="conflicts-section">
+            <p className="text-xs font-mono uppercase tracking-widest text-amber-700 dark:text-amber-400">⚠ Conflicts detected</p>
+            {expConflicts.map((c) => (
+              <p key={`exp-${c.key}`} className="text-sm text-amber-800 dark:text-amber-300">
+                Experiment <span className="font-mono">{c.key}</span> is also used by:{" "}
+                {(c.features || []).filter((f) => f.id !== id).map((f) => f.name).join(", ") || "—"}
+              </p>
+            ))}
+            {redisConflicts.map((c) => (
+              <p key={`redis-${c.key}`} className="text-sm text-amber-800 dark:text-amber-300">
+                Redis key <span className="font-mono">{c.key}</span> is also used by:{" "}
+                {(c.features || []).filter((f) => f.id !== id).map((f) => f.name).join(", ") || "—"}
+              </p>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Content sections */}
       <div className="grid grid-cols-1 gap-4">

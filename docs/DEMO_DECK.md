@@ -84,7 +84,7 @@ Each QAForge Feature card stores:
 **Search across every field — not just the feature name**
 
 - Full-text search covers: feature name, description, tags, test data, mocking steps, Redis keys, experiments, MongoDB collections, cURL APIs.
-- Filter by Core Feature, owner, or tag.
+- Filter by Core Feature, owner (new dropdown populated from distinct owners), or tag.
 - Results show which fields matched.
 
 > **Show on screen:** Type a Redis key pattern into the search bar and show the matching feature appearing immediately.
@@ -99,6 +99,7 @@ Each QAForge Feature card stores:
 - Ask: "What Redis keys does the cancellation flow use?" or "How do I mock the eligibility API?"
 - AI responds with the exact stored data and cites which feature it came from.
 - AI is read-only — it cannot modify QAForge, Redis, or any system.
+- Crisp / Detailed response mode toggle — choose concise answers or thorough explanations.
 - All AI calls go through the Python backend; the model API key never reaches the browser.
 
 > **Show on screen:** Open the AI chat panel. Type a question about a known feature. Show the response with the source citation.
@@ -223,3 +224,6 @@ Each QAForge Feature card stores:
 | 2026-11-05 | Landing page dark mode — all sections now follow system/browser preference automatically | Slide 1b |
 | 2026-11-05 | Login page dark mode — background, card, inputs, labels, and illustrations all adapt to system theme | Slide 2 |
 | 2026-11-05 | Application renamed from TestHub to QAForge across all UI and documentation | All slides |
+| 2026-11-09 | Filter by owner dropdown on Features page — populated from distinct owners in DB, uses existing ?owner= API param | Slide 5 |
+| 2026-11-09 | MongoDB full-text index added over all searchable feature fields (free, built-in; regex search retained for substring matching) | Slide 5 |
+| 2026-11-09 | Crisp / Detailed response mode toggle in AI chat — prompt-only, zero infra cost | Slide 6 |

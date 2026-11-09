@@ -7,7 +7,7 @@ import { Plus, Trash2, ArrowLeft, Save, FileJson, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 const EMPTY = {
-  name: "", core_feature_id: "", jira_ticket: "", description: "", tags: [],
+  name: "", core_feature_id: "", jira_ticket: "", related_features: "", description: "", tags: [],
   status: "active", assigned_approver_id: "",
   test_data: "", test_steps: "", mocking_steps: "",
   apis: [], mongo_collections: [], redis_keys: [], experiments: [],
@@ -37,10 +37,12 @@ export default function FeatureEdit() {
   const [pasteMode, setPasteMode] = useState({});
   const [pasteText, setPasteText] = useState({});
   const [approvers, setApprovers] = useState([]);
+  const [keyUsage, setKeyUsage] = useState({ experiments: {}, redis_keys: {} });
 
   useEffect(() => {
     api.get("/core-features").then((r) => setCoreFeatures(r.data)).catch(() => {});
     api.get("/users/approvers").then((r) => setApprovers(r.data)).catch(() => {});
+    api.get("/features/key-usage").then((r) => setKeyUsage(r.data)).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -96,7 +98,7 @@ export default function FeatureEdit() {
     try {
       const payload = {
         name: f.name, core_feature_id: f.core_feature_id,
-        jira_ticket: f.jira_ticket, description: f.description, tags: f.tags,
+        jira_ticket: f.jira_ticket, related_features: f.related_features, description: f.description, tags: f.tags,
         ...(isEdit ? { status: f.status } : {}),
         ...(f.assigned_approver_id ? { assigned_approver_id: f.assigned_approver_id } : {}),
         test_data: f.test_data, test_steps: f.test_steps, mocking_steps: f.mocking_steps,
@@ -234,6 +236,10 @@ export default function FeatureEdit() {
               <input data-testid="input-jira" value={f.jira_ticket} onChange={(e) => update({ jira_ticket: e.target.value })} className={inp} placeholder="e.g. PROJ-123" />
             </div>
             <div>
+              <label className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 block mb-1.5">Related Features</label>
+              <input data-testid="input-related-features" value={f.related_features || ""} onChange={(e) => update({ related_features: e.target.value })} className={inp} placeholder="e.g. Checkout Flow, Eligibility API" />
+            </div>
+            <div>
               <label className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 block mb-1.5">Owner</label>
               <div className="h-9 px-3 flex items-center text-sm text-zinc-500 bg-indigo-50 border border-indigo-100 rounded-lg" data-testid="owner-display">
                 {user?.name || "—"}
@@ -355,15 +361,28 @@ export default function FeatureEdit() {
         ].map((s) => (
           <Section key={s.key} title={s.title} testid={s.testid}>
             <div className="space-y-2">
-              {(f[s.key] || []).map((item, i) => (
-                <div key={`${s.key}-${i}`} className="flex gap-2" data-testid={`${s.key}-row-${i}`}>
-                  <input value={item.key} onChange={(e) => setKV(s.key, i, { key: e.target.value })} placeholder={s.ph} className={`${inpBase} shrink-0 w-64 font-mono text-xs`} />
-                  <input value={item.description} onChange={(e) => setKV(s.key, i, { description: e.target.value })} placeholder={s.descPh} className={`${inpBase} flex-1 min-w-0`} />
-                  <button type="button" onClick={() => removeKV(s.key, i)} className="h-9 px-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+              {(f[s.key] || []).map((item, i) => {
+                const usageMap = s.key === "experiments" ? keyUsage.experiments : s.key === "redis_keys" ? keyUsage.redis_keys : null;
+                const typed = (item.key || "").trim();
+                const users = usageMap && typed ? (usageMap[typed] || []) : [];
+                const otherUsers = users.filter((n) => n !== f.name);
+                return (
+                <div key={`${s.key}-${i}`} className="flex flex-col gap-1" data-testid={`${s.key}-row-${i}`}>
+                  <div className="flex gap-2">
+                    <input value={item.key} onChange={(e) => setKV(s.key, i, { key: e.target.value })} placeholder={s.ph} className={`${inpBase} shrink-0 w-64 font-mono text-xs`} />
+                    <input value={item.description} onChange={(e) => setKV(s.key, i, { description: e.target.value })} placeholder={s.descPh} className={`${inpBase} flex-1 min-w-0`} />
+                    <button type="button" onClick={() => removeKV(s.key, i)} className="h-9 px-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {otherUsers.length > 0 && (
+                    <p className="text-[10px] font-mono text-amber-600 dark:text-amber-400 pl-1" data-testid={`${s.key}-usage-hint-${i}`}>
+                      Already used by: {otherUsers.join(", ")}
+                    </p>
+                  )}
                 </div>
-              ))}
+                );
+              })}
               <div className="flex items-center gap-2 pt-1">
                 <button type="button" data-testid={`add-${s.key}-btn`} onClick={() => addKV(s.key)} className="inline-flex items-center gap-1.5 h-9 px-3 text-sm border border-indigo-200 rounded-lg hover:bg-indigo-50 text-zinc-600">
                   <Plus className="w-4 h-4" />Add
