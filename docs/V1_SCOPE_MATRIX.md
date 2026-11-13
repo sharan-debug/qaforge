@@ -90,24 +90,28 @@ Authoritative reference for what must be built now versus what belongs to later 
 
 | Item | V1 | V2+ | Notes |
 |---|---|---|---|
-| Owner filter in feature list UI | ✓ | | API filter already exists; needs UI |
-| Search across all feature fields | ✓ | | |
-| matchedFields in response | ✓ | | |
-| Vector/semantic search | ✗ | ✓ | |
+| Search across all feature fields | ✓ | | Backend MongoDB regex, debounced |
+| Tag filter (from backend distinct query) | ✓ | | |
+| Pending filter | ✓ | | |
+| Owner filter UI | ✗ | ✓ | Backend param exists (?owner=), no UI yet |
+| Vector / semantic search | ✗ | ✓ | |
 
 ## AI
 
 | Item | V1 | V2+ | Notes |
 |---|---|---|---|
-| Read-only AI chat | ✓ | | |
-| Retrieval from QAForge knowledge | ✓ | | Current full-context approach |
-| Source references in answers | ✓ | | |
+| Read-only AI chat (full-page /agent route) | ✓ | | |
+| Retrieval from QAForge knowledge | ✓ | | Full-context approach |
+| Source references in answers | ✓ | | Feature pills link to detail pages |
+| AI feedback submission (flag incorrect responses) | ✓ | | |
+| AI feedback review UI (admin/approver) | ✓ | | Pending badge, review/dismiss, audit log |
 | AI writes to QAForge | ✗ | ✓ | |
 | AI executes APIs | ✗ | — | Never |
 | AI modifies Redis | ✗ | — | Never |
 | AI modifies experiments | ✗ | — | Never |
-| Crisp / Detailed response modes | ✗ | ✓ | Future enhancement |
-| RAG / vector retrieval | ✗ | ✓ | Only if current approach insufficient |
+| Crisp / Detailed response modes | ✗ | ✓ | |
+| RAG / vector retrieval | ✗ | ✓ | Only if full-context approach becomes insufficient |
+| Email notifications for feedback review | ✗ | ✓ | No mail system in V1 |
 
 ## Audit and history
 
@@ -139,8 +143,14 @@ Authoritative reference for what must be built now versus what belongs to later 
 
 | Item | V1 | V2+ | Notes |
 |---|---|---|---|
-| Redis execution | ✗ | ✓ | |
-| Unleash/experiment execution | ✗ | ✓ | |
-| Mock execution | ✗ | ✓ | |
-| Automated test-state preparation | ✗ | ✓ | |
-| Environment state verification | ✗ | ✓ | |
+| QA Utility connection (per-user token + global fallback) | ✓ | | Auto-refresh on expiry |
+| Redis read / set / delete | ✓ | | Via QA Utility API |
+| Experiment get state | ✓ | | |
+| Experiment set weights | ✓ | | Weights must sum to 100 |
+| Experiment reset to previous | ✓ | | |
+| Experiment enable / disable toggle | ✓ | | |
+| Withdrawal mock (set) | ✓ | | Phone, provider, status, amount |
+| VPA mock (set / delete) | ✓ | | KYC VPA setup |
+| SIP details / setup / pause / cancel | ✓ | | |
+| Automated test-state preparation (orchestration) | ✗ | ✓ | Multi-step cross-utility orchestration |
+| Environment state verification | ✗ | ✓ | Verify state matches expected |
