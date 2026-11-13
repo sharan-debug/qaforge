@@ -7,7 +7,7 @@ RUN pip install uv
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
-COPY server.py database.py models.py dependencies.py ./
+COPY server.py database.py models.py dependencies.py limiter.py ./
 COPY routers/ ./routers/
 
 ENV PATH="/app/.venv/bin:$PATH"
