@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Features from "./pages/Features";
 import FeatureDetail from "./pages/FeatureDetails";
 import FeatureEdit from "./pages/FeatureEdit";
+import ClosureReport from "./pages/ClosureReport";
 import ImportPage from "./pages/ImportPage";
 import AdminCoreFeatures from "./pages/AdminCoreFeatures";
 import AdminUsers from "./pages/AdminUsers";
@@ -68,6 +69,7 @@ function AppRouter() {
         <Route path="features/new" element={<FeatureEdit />} />
         <Route path="features/:id" element={<FeatureDetail />} />
         <Route path="features/:id/edit" element={<FeatureEdit />} />
+        <Route path="features/:id/closure-report" element={<ClosureReport />} />
         <Route path="import" element={<ImportPage />} />
         <Route path="admin/core-features" element={<RoleRoute roles={["admin"]}><AdminCoreFeatures /></RoleRoute>} />
         <Route path="admin/users" element={<RoleRoute roles={["admin"]}><AdminUsers /></RoleRoute>} />

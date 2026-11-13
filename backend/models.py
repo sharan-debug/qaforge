@@ -148,6 +148,26 @@ class ChatMessageIn(BaseModel):
     mode: Optional[str] = "crisp"  # "crisp" | "detailed"
 
 
+class ClosureReportIn(BaseModel):
+    prd_url: str = ""
+    figma_url: str = ""
+    test_cases_sheet_url: str = ""
+    functionality: str = ""
+    developer: str = ""
+    qa: str = ""
+    pm: str = ""
+    staging_fe_issues: int = 0
+    staging_be_issues: int = 0
+    replica_fe_issues: int = 0
+    replica_be_issues: int = 0
+    platform: str = ""
+    environment_covered: str = ""
+    devices_covered: str = ""
+    happy_flow_doc_url: str = ""
+    sign_off_staging: str = ""
+    sign_off_replica: str = ""
+
+
 class AIFeedbackIn(BaseModel):
     session_id: Optional[str] = None
     ai_message: str

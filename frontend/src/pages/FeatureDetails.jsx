@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../lib/api";
-import { Pencil, Trash2, ArrowLeft, Users, ShieldCheck, FileJson, Upload, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Pencil, Trash2, ArrowLeft, Users, ShieldCheck, FileJson, Upload, Clock, CheckCircle2, XCircle, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
 import QAPanel from "../components/QAPanel";
@@ -325,6 +325,14 @@ export default function FeatureDetail() {
               <Pencil className="w-3.5 h-3.5" /> Edit
             </button>
           )}
+          <button
+            data-testid="closure-report-btn"
+            type="button"
+            onClick={() => navigate(`/features/${id}/closure-report`)}
+            className="inline-flex items-center gap-1.5 h-9 px-3 text-sm border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-zinc-900 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 rounded-lg transition-colors"
+          >
+            <FileText className="w-3.5 h-3.5" /> Closure Report
+          </button>
           {canDelete && (
             <button
               data-testid="delete-feature-btn"

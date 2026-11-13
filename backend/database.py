@@ -33,6 +33,8 @@ async def ensure_indexes():
     await db.features.create_index("tags")
     await db.features.create_index("core_feature_id")
     await db.features.create_index("status")
+
+    await db.closure_reports.create_index("feature_id", unique=True)
     # Free, built-in full-text index over all searchable fields (future $text search).
     await db.features.create_index([
         ("name", "text"),

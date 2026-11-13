@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
 from typing import Optional, Dict, Any
 from database import db, get_gridfs
-from models import Feature, FeatureCreate, FeatureUpdate, ReviewRejectIn, now_iso
+from models import Feature, FeatureCreate, FeatureUpdate, ReviewRejectIn, ClosureReportIn, now_iso
 from dependencies import get_current_user, require_role, log_activity
 
 router = APIRouter(prefix="/api/features")
@@ -270,6 +270,60 @@ async def list_conflicts(request: Request):
         "experiments": await conflicts_for("experiments"),
         "redis_keys": await conflicts_for("redis_keys"),
     }
+
+
+@router.get("/{feature_id}/closure-report")
+async def get_closure_report(feature_id: str, request: Request):
+    await get_current_user(request)
+    feat = await db.features.find_one({"id": feature_id, "is_deleted": {"$ne": True}}, {"_id": 0, "name": 1, "description": 1})
+    if not feat:
+        raise HTTPException(status_code=404, detail="Feature not found")
+    doc = await db.closure_reports.find_one({"feature_id": feature_id}, {"_id": 0})
+    if not doc:
+        return {
+            "feature_id": feature_id,
+            "feature_name": feat.get("name", ""),
+            "prd_url": "",
+            "figma_url": "",
+            "test_cases_sheet_url": "",
+            "functionality": feat.get("description", "") or "",
+            "developer": "",
+            "qa": "",
+            "pm": "",
+            "staging_fe_issues": 0,
+            "staging_be_issues": 0,
+            "replica_fe_issues": 0,
+            "replica_be_issues": 0,
+            "platform": "",
+            "environment_covered": "",
+            "devices_covered": "",
+            "happy_flow_doc_url": "",
+            "sign_off_staging": "",
+            "sign_off_replica": "",
+            "created_at": "",
+            "updated_at": "",
+            "updated_by": "",
+        }
+    doc.setdefault("feature_name", feat.get("name", ""))
+    return doc
+
+
+@router.put("/{feature_id}/closure-report")
+async def upsert_closure_report(feature_id: str, payload: ClosureReportIn, request: Request):
+    user = await get_current_user(request)
+    feat = await db.features.find_one({"id": feature_id, "is_deleted": {"$ne": True}}, {"_id": 0, "name": 1})
+    if not feat:
+        raise HTTPException(status_code=404, detail="Feature not found")
+    now = now_iso()
+    doc = payload.model_dump()
+    doc["feature_id"] = feature_id
+    doc["feature_name"] = feat.get("name", "")
+    doc["updated_at"] = now
+    doc["updated_by"] = user.name
+    existing = await db.closure_reports.find_one({"feature_id": feature_id}, {"_id": 0, "created_at": 1})
+    doc["created_at"] = (existing or {}).get("created_at") or now
+    await db.closure_reports.update_one({"feature_id": feature_id}, {"$set": doc}, upsert=True)
+    return doc
 
 
 @router.get("/owners")
