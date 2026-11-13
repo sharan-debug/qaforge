@@ -219,7 +219,7 @@ ${d.functionality || "—"}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 block mb-1.5">Platform</label>
-            <input data-testid="input-platform" value={data.platform} onChange={(e) => update({ platform: e.target.value })} className={inp} placeholder="Android / iOS / Web" />
+            <input data-testid="input-platform" value={data.platform} onChange={(e) => update({ platform: e.target.value })} className={inp} placeholder="Android / iOS / Web / Platform" />
           </div>
           <div>
             <label className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 block mb-1.5">Environment covered</label>
